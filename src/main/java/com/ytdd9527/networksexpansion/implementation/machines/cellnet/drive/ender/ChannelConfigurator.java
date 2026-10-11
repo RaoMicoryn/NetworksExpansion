@@ -1,10 +1,12 @@
 package com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.ender;
 
 import com.balugaq.netex.utils.Lang;
+import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import com.ytdd9527.networksexpansion.core.items.SpecialSlimefunItem;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.api.DriveType;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.EnderDrive;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.DriveOwnership;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.EnderDrive;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
@@ -14,7 +16,6 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.data.persistent.PersistentDataAPI;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
-import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class ChannelConfigurator extends SpecialSlimefunItem {
 
     private static final NamespacedKey CHANNEL_KEY = new NamespacedKey(Networks.getInstance(), "ender_config_channel");

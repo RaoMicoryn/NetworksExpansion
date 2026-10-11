@@ -3,6 +3,7 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.collect;
 import com.balugaq.netex.utils.Debug;
 import com.balugaq.netex.utils.Lang;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.NetworkUtil;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 import io.github.sefiraat.networks.network.NetworkRoot;
 import org.bukkit.Bukkit;
@@ -21,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 public final class CollectService {
 
     private static final NamespacedKey KEY_MARK = new NamespacedKey(Networks.getInstance(), "collect_mark");
@@ -139,7 +139,7 @@ public final class CollectService {
                 batch.addAll(player.getInventory().addItem(drop).values());
             }
         }
-        root.addItemStacks0(netLocation, batch);
+        root.addItemStacks(netLocation, batch);
         List<ItemStack> leftovers = new ArrayList<>();
         for (ItemStack stack : batch) {
             if (stack.getAmount() > 0) {

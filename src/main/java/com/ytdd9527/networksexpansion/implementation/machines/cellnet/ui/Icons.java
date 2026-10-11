@@ -1,14 +1,13 @@
 package com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui;
 
 import com.balugaq.netex.utils.Lang;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.GhostItems;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.assembly.AssemblyCard;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.Cell;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.GhostItems;
+
 public final class Icons {
 
     public static final ItemStack BACK = of("cellnet-back-button", Material.BARRIER);

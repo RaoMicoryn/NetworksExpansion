@@ -3,6 +3,7 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive;
 import com.balugaq.netex.utils.Lang;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.api.DriveType;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public final class DriveGuide {
 
     private static final long MAX_DURATION_MS = 120_000L;

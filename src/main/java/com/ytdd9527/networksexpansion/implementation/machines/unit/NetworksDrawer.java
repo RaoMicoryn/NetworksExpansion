@@ -423,7 +423,7 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                 NetworkUtils.clearNearbyNetworks(blockMenu.getLocation());
                 if (StackUtils.itemsMatch(clickItem, Icon.ERROR_BORDER)) {
                     if (itemOnCursor.getType() != Material.AIR) {
-                        data.depositItemStack0(l, itemOnCursor, false, true);
+                        data.depositItemStack(l, itemOnCursor, false, true);
                     }
                 } else {
                     List<Integer> display = new ArrayList<>();
@@ -447,7 +447,7 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                             itemRequest.setAmount(take.getMaxStackSize() * 36);
                         }
 
-                        final ItemStack requested = data.requestItem0(l, itemRequest, false);
+                        final ItemStack requested = data.requestItem(l, itemRequest, false);
                         if (requested != null) {
                             do {
                                 int max =
@@ -456,14 +456,14 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                                 requested.setAmount(requested.getAmount() - max);
                                 InventoryUtil.addItem(player, clone);
                                 if (clone.getAmount() > 0) {
-                                    data.depositItemStack0(l, clone, false);
+                                    data.depositItemStack(l, clone, false);
                                 }
                             } while (requested.getAmount() > 0);
                         }
                     } else {
                         for (ItemStack each : player.getInventory().getStorageContents()) {
                             if (StackUtils.itemsMatch(each, take)) {
-                                data.depositItemStack0(l, each, true);
+                                data.depositItemStack(l, each, true);
                             }
                         }
                     }
@@ -596,7 +596,7 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                             }
                             final ItemStack clone = quantumCache.getItemStack().clone();
                             clone.setAmount(canAdd);
-                            thisStorage.depositItemStack0(location, clone, true);
+                            thisStorage.depositItemStack(location, clone, true);
                             player.sendMessage(Lang.getString("messages.completed-operation.drawer.deposited_item"));
                             return;
                         }
@@ -627,7 +627,7 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                                 }
                                 final ItemStack clone = sample.clone();
 
-                                thisStorage.requestItem0(location, new ItemRequest(clone, canAdd), false);
+                                thisStorage.requestItem(location, new ItemRequest(clone, canAdd), false);
                                 storages.put(location, thisStorage);
 
                                 quantumCache = new QuantumCache(clone, canAdd, quantumLimit, false, false);
@@ -654,7 +654,7 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                                 }
                                 final ItemStack clone = sample.clone();
 
-                                thisStorage.requestItem0(location, new ItemRequest(clone, canAdd));
+                                thisStorage.requestItem(location, new ItemRequest(clone, canAdd));
                                 storages.put(location, thisStorage);
 
                                 quantumCache =
@@ -714,7 +714,7 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                             }
                             int before = stored.getAmount();
                             String name = ItemStackHelper.getDisplayName(stored);
-                            thisStorage.depositItemStack0(location, stored, true);
+                            thisStorage.depositItemStack(location, stored, true);
                             int left = stored.getAmount();
                             ItemMover.setStoredAmount(itemStack, exist - (before - left));
                             player.sendMessage(String.format(
@@ -725,13 +725,13 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                         case TO_QUANTUM -> {
                             ItemRequest itemRequest = new ItemRequest(sample, each.getAmount());
                             int before = each.getAmount();
-                            ItemStack fetched = thisStorage.requestItem0(location, itemRequest, false);
+                            ItemStack fetched = thisStorage.requestItem(location, itemRequest, false);
                             if (fetched != null) {
                                 String name = ItemStackHelper.getDisplayName(fetched);
                                 ItemMover.depositItem(itemStack, fetched);
                                 int left = fetched.getAmount();
                                 if (fetched.getAmount() > 0) {
-                                    thisStorage.depositItemStack0(location, fetched, false);
+                                    thisStorage.depositItemStack(location, fetched, false);
                                 }
                                 player.sendMessage(String.format(
                                     Lang.getString("messages.completed-operation.drawer.transferred_to_item_mover"),

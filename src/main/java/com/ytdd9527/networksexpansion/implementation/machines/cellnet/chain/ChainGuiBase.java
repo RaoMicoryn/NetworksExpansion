@@ -5,6 +5,7 @@ import com.balugaq.netex.utils.Debug;
 import com.balugaq.netex.utils.Lang;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.GhostItems;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.Icons;
 import io.github.sefiraat.networks.slimefun.network.NetworkDirectional;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public abstract class ChainGuiBase extends AbstractChainMachine {
 
     public static final int UP_SLOT = 11;

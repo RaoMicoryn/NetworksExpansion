@@ -208,20 +208,20 @@ public class SwitchingMonitor extends NetworkObject implements HangingBlock, Pla
             }
 
             if (shift) {
-                ItemStack result = root.getItemStack0(attachon, new ItemRequest(template, amount));
+                ItemStack result = root.getItemStack(attachon, new ItemRequest(template, amount));
                 if (result != null) {
                     InventoryUtil.addItem(player, result);
                     if (result.getAmount() > 0) {
-                        root.addItemStack0(attachon, result);
+                        root.addItemStack(attachon, result);
                     }
                 }
             } else {
-                ItemStack result = root.getItemStack0(
+                ItemStack result = root.getItemStack(
                     attachon, new ItemRequest(template, Math.min(amount, template.getMaxStackSize())));
                 if (result != null) {
                     InventoryUtil.addItem(player, result);
                     if (result.getAmount() > 0) {
-                        root.addItemStack0(attachon, result);
+                        root.addItemStack(attachon, result);
                     }
                 }
             }
@@ -232,7 +232,7 @@ public class SwitchingMonitor extends NetworkObject implements HangingBlock, Pla
                         && item.getType() != Material.AIR
                         && StackUtils.itemsMatch(item, template, true, false)) {
                         int before = item.getAmount();
-                        root.addItemStack0(attachon, item);
+                        root.addItemStack(attachon, item);
                         int after = item.getAmount();
                         if (before == after) {
                             break;
@@ -240,7 +240,7 @@ public class SwitchingMonitor extends NetworkObject implements HangingBlock, Pla
                     }
                 }
             } else {
-                root.addItemStack0(attachon, hand);
+                root.addItemStack(attachon, hand);
             }
         }
     }

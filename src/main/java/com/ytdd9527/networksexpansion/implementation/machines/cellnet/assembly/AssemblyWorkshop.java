@@ -1,20 +1,19 @@
 package com.ytdd9527.networksexpansion.implementation.machines.cellnet.assembly;
 
-import com.balugaq.netex.api.helpers.Icon;
 import com.balugaq.netex.utils.BlockMenuUtil;
 import com.balugaq.netex.utils.Lang;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import com.ytdd9527.networksexpansion.core.items.SpecialSlimefunItem;
 import com.ytdd9527.networksexpansion.implementation.ExpansionItems;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.NetworkUtil;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.DriveOwnership;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.assembly.AssemblyCard;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.assembly.recipe.AssemblyCardRecipes;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.DriveOwnership;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.NetworkUtil;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.Icons;
 import com.ytdd9527.networksexpansion.utils.itemstacks.ItemStackUtil;
-import io.github.sefiraat.networks.Networks;
 import io.github.sefiraat.networks.NetworkStorage;
+import io.github.sefiraat.networks.Networks;
 import io.github.sefiraat.networks.network.NetworkRoot;
 import io.github.sefiraat.networks.network.NodeDefinition;
 import io.github.sefiraat.networks.network.NodeType;
@@ -45,7 +44,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 
 public class AssemblyWorkshop extends SpecialSlimefunItem {
 
@@ -213,11 +211,11 @@ public class AssemblyWorkshop extends SpecialSlimefunItem {
 
         ItemStack cardStack = menu.getItemInSlot(CARD_SLOT);
         if (cardStack == null || cardStack.getType().isAir() || AssemblyCard.readCard(cardStack) != null) {
-            ItemStack pulled = root.getItemStack0(location,
+            ItemStack pulled = root.getItemStack(location,
                 new ItemRequest(ExpansionItems.ASSEMBLY_CARD.getItem(), 64));
             if (pulled == null || !AssemblyCard.isCard(pulled) || AssemblyCard.readCard(pulled) != null) {
                 if (pulled != null) {
-                    root.addItemStack0(location, pulled);
+                    root.addItemStack(location, pulled);
                 }
                 player.sendMessage(Lang.getString(CellnetText.WORKSHOP_NO_CARD));
                 return false;

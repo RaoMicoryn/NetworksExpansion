@@ -101,7 +101,7 @@ public abstract class AbstractNetworkPusher extends NetworkDirectional implement
                 }
 
                 ItemStack retrieved =
-                    definition.getNode().getRoot().getItemStack0(blockMenu.getLocation(), itemRequest);
+                    definition.getNode().getRoot().getItemStack(blockMenu.getLocation(), itemRequest);
                 if (retrieved != null) {
                     BlockMenuUtil.pushItem(targetMenu, retrieved, slots);
                     sendFeedback(blockMenu.getLocation(), FeedbackType.WORKING);

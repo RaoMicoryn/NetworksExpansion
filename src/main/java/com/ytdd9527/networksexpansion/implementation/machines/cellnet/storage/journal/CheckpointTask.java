@@ -6,6 +6,7 @@ import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.co
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.schema.DDLProvider;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.util.CRC32Utils;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.write.WriteStrategy;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 
 import java.nio.charset.StandardCharsets;
@@ -21,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class CheckpointTask implements Runnable {
 
     private static final Logger LOGGER = Networks.getInstance().getLogger();

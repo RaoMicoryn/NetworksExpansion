@@ -138,7 +138,7 @@ public class SmartGrabber extends SpecialSlimefunItem implements AdminDebuggable
                             if (item != null && item.getType() != Material.AIR) {
                                 final int exceptedReceive = Math.min(item.getAmount(), limit);
                                 final ItemStack clone = StackUtils.getAsQuantity(item, exceptedReceive);
-                                root.addItemStack0(thisBlock.getLocation(), clone);
+                                root.addItemStack(thisBlock.getLocation(), clone);
                                 item.setAmount(item.getAmount() - (exceptedReceive - clone.getAmount()));
                                 limit -= exceptedReceive - clone.getAmount();
                                 if (limit <= 0) {

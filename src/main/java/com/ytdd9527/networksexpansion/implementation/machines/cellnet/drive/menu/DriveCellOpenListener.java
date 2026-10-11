@@ -18,7 +18,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.Cell;
+
 public class DriveCellOpenListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

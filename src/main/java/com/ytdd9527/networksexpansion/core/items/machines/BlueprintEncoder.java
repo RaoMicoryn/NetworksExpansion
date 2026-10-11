@@ -153,7 +153,7 @@ public class BlueprintEncoder extends NetworkObject implements CraftTyped {
 
         if (blueprint == null || blueprint.getType() == Material.AIR) {
             ItemStack bp = NetworkSlimefunItems.CRAFTING_BLUEPRINT.getItem();
-            blueprint = root.getItemStack0(blockMenu.getLocation(), new ItemRequest(bp, bp.getMaxStackSize()));
+            blueprint = root.getItemStack(blockMenu.getLocation(), new ItemRequest(bp, bp.getMaxStackSize()));
             if (blueprint == null) {
                 player.sendMessage(Lang.getString("messages.feedback.no_blueprint_found"));
                 sendFeedback(blockMenu.getLocation(), FeedbackType.NO_BLUEPRINT_FOUND);
@@ -246,7 +246,7 @@ public class BlueprintEncoder extends NetworkObject implements CraftTyped {
         if (BlockMenuUtil.fits(blockMenu, blueprintClone, OUTPUT_SLOT)) {
             ItemStack recover = null;
             if (blueprint.getAmount() == 1) {
-                recover = root.getItemStack0(blockMenu.getLocation(), new ItemRequest(blueprint, blueprint.getMaxStackSize()));
+                recover = root.getItemStack(blockMenu.getLocation(), new ItemRequest(blueprint, blueprint.getMaxStackSize()));
             }
             blueprint.setAmount(blueprint.getAmount() - 1);
             if (recover != null) {

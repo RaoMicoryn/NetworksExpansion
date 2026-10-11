@@ -2,8 +2,11 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell;
 
 import com.balugaq.netex.utils.Lang;
 import com.ytdd9527.networksexpansion.core.items.SpecialSlimefunItem;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.menu.CellMenu;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.ledger.CellLedger;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.ledger.CellPersistence;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.menu.CellLore;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.menu.CellMenu;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
@@ -15,9 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.ledger.CellLedger;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.ledger.CellPersistence;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class StorageCell extends SpecialSlimefunItem implements NotPlaceable {
 
     @Getter

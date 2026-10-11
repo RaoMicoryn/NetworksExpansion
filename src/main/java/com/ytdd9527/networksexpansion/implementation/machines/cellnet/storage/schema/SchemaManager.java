@@ -2,6 +2,7 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.s
 
 import com.balugaq.netex.utils.Debug;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.connection.ConnectionManager;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 
 import java.sql.Connection;
@@ -9,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class SchemaManager {
 
     private static final Logger LOGGER = Networks.getInstance().getLogger();

@@ -4,6 +4,7 @@ import com.balugaq.netex.utils.Lang;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.api.DriveType;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.VoidCellSupport;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class EnderVoidGuardListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

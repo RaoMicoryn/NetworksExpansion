@@ -2,9 +2,7 @@ package com.ytdd9527.networksexpansion.implementation.machines.networks.grids.vi
 
 import com.balugaq.bim.general.BlockPos;
 import com.balugaq.bim.grid.ActiveGrid;
-import com.balugaq.bim.grid.GridDataCache;
 import com.balugaq.bim.grid.GridOrientation;
-import com.balugaq.bim.grid.GridUtil;
 import com.balugaq.netex.api.keybind.Keybindable;
 import com.balugaq.netex.api.keybind.Keybinds;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
@@ -129,7 +127,7 @@ public class VisualGrid extends AbstractGridNewStyle implements Keybindable {
         var root = node.getNode().getRoot();
         var items = active.getLocation().getWorld().getNearbyEntitiesByType(Item.class, active.getLocation(), 1, 1, 1);
         for (var e : items) {
-            root.addItemStack0(location, e.getItemStack());
+            root.addItemStack(location, e.getItemStack());
             if (e.getItemStack().getAmount() == 0) {
                 e.remove();
             }

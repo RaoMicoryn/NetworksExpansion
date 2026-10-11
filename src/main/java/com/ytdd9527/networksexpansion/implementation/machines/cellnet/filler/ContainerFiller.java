@@ -4,12 +4,13 @@ import com.balugaq.netex.utils.Lang;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import com.ytdd9527.networksexpansion.core.items.SpecialSlimefunItem;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.NetworkUtil;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.ItemKey;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.Icons;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.MenuShells;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.DriveOwnership;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.WhitelistStore;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.ItemKey;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.NetworkUtil;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.Icons;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.MenuShells;
 import io.github.sefiraat.networks.NetworkStorage;
 import io.github.sefiraat.networks.Networks;
 import io.github.sefiraat.networks.network.NetworkRoot;
@@ -30,7 +31,6 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
-import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class ContainerFiller extends SpecialSlimefunItem {
 
     public static final int STATUS_SLOT = 45;
@@ -334,7 +334,7 @@ public class ContainerFiller extends SpecialSlimefunItem {
                         break;
                     }
                 } else {
-                    List<ItemStack> results = root.getItemStacksBatch0(location, requests);
+                    List<ItemStack> results = root.getItemStacksBatch(location, requests);
                     for (int r = 0; r < requests.size(); r++) {
                         ItemStack got = results.get(r);
                         long amount = got == null || got.getType().isAir() ? 0L : got.getAmount();
@@ -346,7 +346,7 @@ public class ContainerFiller extends SpecialSlimefunItem {
                         if (leftover > 0L) {
                             ItemStack back = requestTemplate.get(r).clone();
                             back.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
-                            root.addItemStack0(location, back);
+                            root.addItemStack(location, back);
                         }
                         filledTotal += acc;
                     }
@@ -427,7 +427,7 @@ public class ContainerFiller extends SpecialSlimefunItem {
         if (buffer == null) {
             return;
         }
-        root.addItemStack0(location, buffer);
+        root.addItemStack(location, buffer);
         if (buffer.getAmount() > 0) {
             FillerPdc.saveBuffer(location, buffer);
         } else {

@@ -162,7 +162,7 @@ public class AdvancedExport extends NetworkObject implements RecipeDisplayItem {
         // fetch items from network
         ItemStack fetched;
         for (ItemRequest itemRequest : itemRequests) {
-            fetched = networkRoot.getItemStack0(blockMenu.getLocation(), itemRequest); // fetch item from network
+            fetched = networkRoot.getItemStack(blockMenu.getLocation(), itemRequest); // fetch item from network
             if (fetched != null) {
                 // amount may not be excepted, but it is the max amount we can fetch.
                 placeItems(networkRoot, blockMenu, fetched.clone(), fetched.getAmount(), getOutputSlots());
@@ -185,7 +185,7 @@ public class AdvancedExport extends NetworkObject implements RecipeDisplayItem {
     }
 
     private void returnItems(@NotNull NetworkRoot root, @NotNull ItemStack itemStack, @NotNull BlockMenu blockMenu) {
-        root.addItemStack0(blockMenu.getLocation(), itemStack);
+        root.addItemStack(blockMenu.getLocation(), itemStack);
     }
 
     @Override

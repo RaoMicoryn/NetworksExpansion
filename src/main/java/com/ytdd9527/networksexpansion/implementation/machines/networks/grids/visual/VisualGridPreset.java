@@ -2,7 +2,6 @@ package com.ytdd9527.networksexpansion.implementation.machines.networks.grids.vi
 
 import com.balugaq.bim.grid.ActiveGrid;
 import com.balugaq.bim.grid.ActiveGridPreset;
-import com.balugaq.bim.grid.InteractUnit;
 import com.balugaq.netex.api.helpers.Icon;
 import com.balugaq.netex.api.visual.Screen;
 import com.ytdd9527.networksexpansion.implementation.ExpansionItems;

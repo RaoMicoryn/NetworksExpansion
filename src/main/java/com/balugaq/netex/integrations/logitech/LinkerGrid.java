@@ -13,8 +13,8 @@ import com.ytdd9527.networksexpansion.core.items.machines.AbstractGridNewStyle;
 import com.ytdd9527.networksexpansion.implementation.ExpansionItems;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.api.DriveType;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.CellHandle;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.ItemKey;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.CellDrive;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.ItemKey;
 import com.ytdd9527.networksexpansion.implementation.machines.unit.NetworksDrawer;
 import com.ytdd9527.networksexpansion.utils.ReflectionUtil;
 import com.ytdd9527.networksexpansion.utils.TextUtil;
@@ -478,7 +478,7 @@ public class LinkerGrid extends NetworkObject {
         }
 
         for (BlockMenu c : root.getCellMenus()) {
-            if (!NetworkRoot.isRealCell(c)) continue;
+            if (NetworkRoot.isFakeCell(c)) continue;
             for (int slot : NetworkRoot.CELL_AVAILABLE_SLOTS) {
                 if (!StackUtils.itemsMatch(c.getItemInSlot(slot), itemStack)) continue;
                 return c.getLocation();
@@ -552,7 +552,7 @@ public class LinkerGrid extends NetworkObject {
 
     @Nullable
     private ItemStack getLinkStack(@NotNull BlockMenu menu, @NotNull NetworkRoot root, @NotNull Player player) {
-        ItemStack link = root.getItemStack0(menu.getLocation(), new ItemRequest(getLink(menu.getLocation()), 1));
+        ItemStack link = root.getItemStack(menu.getLocation(), new ItemRequest(getLink(menu.getLocation()), 1));
         if (link == null) {
             // get from player inventory
             for (ItemStack stack : player.getInventory()) {

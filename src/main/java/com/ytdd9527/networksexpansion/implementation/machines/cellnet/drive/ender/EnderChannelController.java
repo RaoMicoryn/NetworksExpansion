@@ -1,6 +1,7 @@
 package com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.ender;
 
 import com.balugaq.netex.utils.Debug;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 public final class EnderChannelController {
 
     private static final String TABLE_CREATE_SQL = "CREATE TABLE IF NOT EXISTS ender_channels ("

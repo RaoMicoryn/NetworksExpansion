@@ -1,7 +1,7 @@
 package com.ytdd9527.networksexpansion.implementation;
 
-import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.CellTier;
+import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -13,9 +13,7 @@ import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_BRIDGE;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_CAPACITOR_1;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_CAPACITOR_2;
-import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_CAPACITOR_3;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_CAPACITOR_4;
-import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_CELL;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_CONFIGURATOR;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_CRAFTING_GRID;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_EXPORT;
@@ -41,12 +39,8 @@ import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_QUANTUM_STORAGE_7;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_QUANTUM_STORAGE_8;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_QUANTUM_STORAGE_9;
-import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_QUANTUM_STORAGE_11;
-import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_QUANTUM_STORAGE_12;
-import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_QUANTUM_STORAGE_13;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_QUANTUM_WORKBENCH;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_RECIPE_ENCODER;
-import com.ytdd9527.networksexpansion.implementation.ExpansionItemStacks;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_VACUUM;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_VANILLA_GRABBER;
 import static io.github.sefiraat.networks.slimefun.NetworkSlimefunItems.NETWORK_VANILLA_PUSHER;

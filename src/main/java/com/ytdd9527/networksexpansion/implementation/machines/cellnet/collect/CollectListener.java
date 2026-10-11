@@ -2,7 +2,7 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.collect;
 
 import com.balugaq.netex.utils.Lang;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
-import io.github.sefiraat.networks.Networks;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.slimefun.network.NetworkController;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 public class CollectListener implements Listener {
 
     private static final long INTERACT_THROTTLE_MS = 250L;

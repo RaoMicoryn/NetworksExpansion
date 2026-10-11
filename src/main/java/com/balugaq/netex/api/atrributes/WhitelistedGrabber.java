@@ -54,7 +54,7 @@ public interface WhitelistedGrabber {
                 for (ItemStack template : templates) {
                     if (StackUtils.itemsMatch(template, itemInSlot)) {
                         int before = itemInSlot.getAmount();
-                        root.addItemStack0(blockMenu.getLocation(), itemInSlot);
+                        root.addItemStack(blockMenu.getLocation(), itemInSlot);
                         found = true;
                         break;
                     }

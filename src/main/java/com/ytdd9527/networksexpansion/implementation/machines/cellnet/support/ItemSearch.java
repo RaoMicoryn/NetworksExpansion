@@ -3,12 +3,11 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.support;
 import com.balugaq.netex.utils.Lang;
 import com.github.houbb.pinyin.constant.enums.PinyinStyleEnum;
 import com.github.houbb.pinyin.util.PinyinHelper;
-import io.github.sefiraat.networks.Networks;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.Icons;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.support.ChatInput;
 import com.ytdd9527.networksexpansion.utils.TextUtil;
+import io.github.sefiraat.networks.Networks;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Function;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public final class ItemSearch {
 
     private ItemSearch() {
