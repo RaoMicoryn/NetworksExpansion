@@ -1399,7 +1399,7 @@ public class NetworkRoot extends NetworkNode {
                         StorageUnitData data = accessOutputAbleCargoStorageUnitData(entry.getKey());
                         if (data != null) {
                             // <editor-fold desc="do drawer">
-                            ItemStack take = data.requestItem0(accessor, request);
+                            ItemStack take = data.requestItem(accessor, request);
                             if (take != null) {
                                 // Netex - Cache start
                                 minusCacheMiss(accessor, entry.getKey());
@@ -1500,7 +1500,7 @@ public class NetworkRoot extends NetworkNode {
             // Units
             for (StorageUnitData cache : getOutputAbleDrawerData().values()) {
                 // <editor-fold desc="do drawer">
-                ItemStack take = cache.requestItem0(accessor, request);
+                ItemStack take = cache.requestItem(accessor, request);
                 if (take != null) {
                     // Netex - Cache start
                     addCountObservingAccessHistory(accessor, cache.getLastLocation());
@@ -1804,7 +1804,7 @@ public class NetworkRoot extends NetworkNode {
                         if (data != null) {
                             for (Iterator<BatchTake> iterator = pending.iterator(); iterator.hasNext(); ) {
                                 final BatchTake take = iterator.next();
-                                final ItemStack takeStack = data.requestItem0(accessor, take.request);
+                                final ItemStack takeStack = data.requestItem(accessor, take.request);
                                 if (takeStack != null) {
                                     // Netex - Cache start
                                     minusCacheMiss(accessor, historyLocation);
@@ -1920,7 +1920,7 @@ public class NetworkRoot extends NetworkNode {
             for (StorageUnitData cache : getOutputAbleDrawerData().values()) {
                 for (Iterator<BatchTake> iterator = pending.iterator(); iterator.hasNext(); ) {
                     final BatchTake take = iterator.next();
-                    final ItemStack takeStack = cache.requestItem0(accessor, take.request);
+                    final ItemStack takeStack = cache.requestItem(accessor, take.request);
                     if (takeStack != null) {
                         // Netex - Cache start
                         addCountObservingAccessHistory(accessor, cache.getLastLocation());
@@ -2246,7 +2246,7 @@ public class NetworkRoot extends NetworkNode {
                         // Netex - Cache start
                         int before2 = incoming.getAmount();
                         // Netex - Cache end
-                        data.depositItemStack0(accessor, incoming, true);
+                        data.depositItemStack(accessor, incoming, true);
 
                         // Netex - Cache start
                         if (incoming.getAmount() != before2) {
@@ -2343,7 +2343,7 @@ public class NetworkRoot extends NetworkNode {
             int before2 = incoming.getAmount();
             // Netex - Cache end
 
-            cache.depositItemStack0(accessor, incoming, true);
+            cache.depositItemStack(accessor, incoming, true);
 
             // Netex - Cache start
             if (incoming.getAmount() != before2) {
@@ -2546,7 +2546,7 @@ public class NetworkRoot extends NetworkNode {
     // ============= Fallback methods =============
 
     /**
-     * fallback, use {@link #getItemStack(Location, ItemRequest)} instead.
+     * deprecated, use {@link #getItemStack(Location, ItemRequest)} instead.
      */
     @Deprecated
     @Nullable
@@ -2555,7 +2555,7 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * fallback, use {@link #addItemStack(Location, ItemStack)} instead.
+     * deprecated, use {@link #addItemStack(Location, ItemStack)} instead.
      */
     @Deprecated
     public void addItemStack(ItemStack incoming) {

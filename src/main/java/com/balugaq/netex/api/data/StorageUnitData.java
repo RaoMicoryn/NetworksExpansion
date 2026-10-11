@@ -250,39 +250,13 @@ public class StorageUnitData {
         return storedItems;
     }
 
-    @Deprecated
     @Nullable
-    public synchronized ItemStack requestItem(ItemRequest itemRequest) {
-        ItemStack item = itemRequest.getItemStack();
-        if (item == null) {
-            return null;
-        }
-
-        int amount = itemRequest.getAmount();
-        for (ItemContainer itemContainer : getStoredItems()) {
-            int containerAmount = itemContainer.getAmount();
-            if (StackUtils.itemsMatch(itemRequest, itemContainer.getSampleDirectly())) {
-                int take = Math.min(amount, containerAmount);
-                if (take <= 0) {
-                    break;
-                }
-                itemContainer.removeAmount(take);
-                DataStorage.setStoredAmount(id, itemContainer.getId(), itemContainer.getAmount());
-                ItemStack clone = item.clone();
-                clone.setAmount(take);
-                return clone;
-            }
-        }
-        return null;
+    public synchronized ItemStack requestItem(@Nullable Location accessor, ItemRequest itemRequest) {
+        return requestItem(accessor, itemRequest, true);
     }
 
     @Nullable
-    public synchronized ItemStack requestItem0(@Nullable Location accessor, ItemRequest itemRequest) {
-        return requestItem0(accessor, itemRequest, true);
-    }
-
-    @Nullable
-    public synchronized ItemStack requestItem0(@Nullable Location accessor, ItemRequest itemRequest, boolean contentLocked) {
+    public synchronized ItemStack requestItem(@Nullable Location accessor, ItemRequest itemRequest, boolean contentLocked) {
         ItemStack item = itemRequest.getItemStack();
         if (item == null) {
             return null;
@@ -371,60 +345,60 @@ public class StorageUnitData {
         return null;
     }
 
-    public synchronized void depositItemStacks0(
-        Location accessor, Map<ItemStack, Long> itemsToDeposit, boolean contentLocked) {
+    public synchronized void depositItemStacks(
+        @Nullable Location accessor, Map<ItemStack, Long> itemsToDeposit, boolean contentLocked) {
         for (Map.Entry<ItemStack, Long> entry : itemsToDeposit.entrySet()) {
             if (entry.getValue() > Integer.MAX_VALUE) {
                 // rollback to MAX_VALUE
                 long before = entry.getValue();
                 ItemStack item = StackUtils.getAsQuantity(entry.getKey(), Integer.MAX_VALUE);
-                depositItemStack0(accessor, item, contentLocked);
+                depositItemStack(accessor, item, contentLocked);
                 long leftover = item.getAmount();
                 entry.setValue(before - Integer.MAX_VALUE + leftover);
             } else {
                 ItemStack item = StackUtils.getAsQuantity(entry.getKey(), Math.toIntExact(entry.getValue()));
-                depositItemStack0(accessor, item, contentLocked);
+                depositItemStack(accessor, item, contentLocked);
                 long rest = item.getAmount();
                 entry.setValue(rest);
             }
         }
     }
 
-    public synchronized void depositItemStack0(
-        Location accessor, Map.Entry<ItemStack, Integer> entry, boolean contentLocked) {
+    public synchronized void depositItemStack(
+        @Nullable Location accessor, Map.Entry<ItemStack, Integer> entry, boolean contentLocked) {
         ItemStack item = StackUtils.getAsQuantity(entry.getKey(), entry.getValue());
-        depositItemStack0(accessor, item, contentLocked);
+        depositItemStack(accessor, item, contentLocked);
         int leftover = item.getAmount();
         entry.setValue(leftover);
     }
 
-    public synchronized void depositItemStack0(
-        Location accessor, Map<ItemStack, Integer> itemsToDeposit, boolean contentLocked) {
+    public synchronized void depositItemStack(
+        @Nullable Location accessor, Map<ItemStack, Integer> itemsToDeposit, boolean contentLocked) {
         for (Map.Entry<ItemStack, Integer> entry : itemsToDeposit.entrySet()) {
-            depositItemStack0(accessor, entry, contentLocked);
+            depositItemStack(accessor, entry, contentLocked);
         }
     }
 
-    public void depositItemStack0(
-        Location accessor, ItemStack [] itemsToDeposit, boolean contentLocked) {
+    public void depositItemStack(
+        @Nullable Location accessor, ItemStack [] itemsToDeposit, boolean contentLocked) {
         for (ItemStack item : itemsToDeposit) {
-            depositItemStack0(accessor, item, contentLocked);
+            depositItemStack(accessor, item, contentLocked);
         }
     }
 
-    public synchronized void depositItemStack0(
+    public synchronized void depositItemStack(
         @Nullable Location accessor, @Nullable ItemStack itemsToDeposit, boolean contentLocked, boolean force) {
         if (itemsToDeposit == null || isBlacklisted(itemsToDeposit)) {
             return;
         }
-        int actualAdded = addStoredItem0(accessor, itemsToDeposit, itemsToDeposit.getAmount(), contentLocked, force);
+        int actualAdded = addStoredItem(accessor, itemsToDeposit, itemsToDeposit.getAmount(), contentLocked, force);
         if (actualAdded > 0) {
             itemsToDeposit.setAmount(itemsToDeposit.getAmount() - actualAdded);
         }
     }
 
-    public void depositItemStack0(@Nullable Location accessor, ItemStack item, boolean contentLocked) {
-        depositItemStack0(accessor, item, contentLocked, false);
+    public void depositItemStack(@Nullable Location accessor, ItemStack item, boolean contentLocked) {
+        depositItemStack(accessor, item, contentLocked, false);
     }
 
     /**
@@ -435,7 +409,7 @@ public class StorageUnitData {
      * @param amount:   amount will be added
      * @return the amount actual added
      */
-    public synchronized int addStoredItem0(
+    public synchronized int addStoredItem(
         @Nullable Location accessor, ItemStack item, int amount, boolean contentLocked, boolean force) {
         int add = 0;
         boolean isVoidExcess = NetworksDrawer.isVoidExcess(getLastLocation());
@@ -547,15 +521,131 @@ public class StorageUnitData {
      * @param item:     item will be added
      * @return the amount actual added
      */
+    public int addStoredItem(@Nullable Location accessor, ItemStack item, boolean contentLocked) {
+        return addStoredItem(accessor, item, item.getAmount(), contentLocked, false);
+    }
+
+    public int addStoredItem(@Nullable Location accessor, ItemStack item, boolean contentLocked, boolean force) {
+        return addStoredItem(accessor, item, item.getAmount(), contentLocked, force);
+    }
+
+    public int addStoredItem(@Nullable Location accessor, ItemStack item, int amount, boolean contentLocked) {
+        return addStoredItem(accessor, item, amount, contentLocked, false);
+    }
+
+    // ============= Fallback methods =============
+
+    @Deprecated
+    public synchronized int addStoredItem0(
+        @Nullable Location accessor, ItemStack item, int amount, boolean contentLocked, boolean force) {
+        return addStoredItem(accessor, item, amount, contentLocked, force);
+    }
+
+    @Deprecated
     public int addStoredItem0(Location accessor, ItemStack item, boolean contentLocked) {
-        return addStoredItem0(accessor, item, item.getAmount(), contentLocked, false);
+        return addStoredItem(accessor, item, contentLocked);
     }
 
+    @Deprecated
     public int addStoredItem0(Location accessor, ItemStack item, boolean contentLocked, boolean force) {
-        return addStoredItem0(accessor, item, item.getAmount(), contentLocked, force);
+        return addStoredItem(accessor, item, contentLocked, force);
     }
 
+    @Deprecated
     public int addStoredItem0(Location accessor, ItemStack item, int amount, boolean contentLocked) {
-        return addStoredItem0(accessor, item, amount, contentLocked, false);
+        return addStoredItem(accessor, item, amount, contentLocked);
+    }
+
+    @Deprecated
+    public int addStoredItem(ItemStack item, boolean contentLocked) {
+        return addStoredItem(null, item, item.getAmount(), contentLocked, false);
+    }
+
+    @Deprecated
+    public int addStoredItem(ItemStack item, boolean contentLocked, boolean force) {
+        return addStoredItem(null, item, item.getAmount(), contentLocked, force);
+    }
+
+    @Deprecated
+    public int addStoredItem(ItemStack item, int amount, boolean contentLocked) {
+        return addStoredItem(null, item, amount, contentLocked, false);
+    }
+
+    @Deprecated
+    public int addStoredItem0(ItemStack item, boolean contentLocked) {
+        return addStoredItem(null, item, contentLocked);
+    }
+
+    @Deprecated
+    public int addStoredItem0(ItemStack item, boolean contentLocked, boolean force) {
+        return addStoredItem(null, item, contentLocked, force);
+    }
+
+    @Deprecated
+    public int addStoredItem0(ItemStack item, int amount, boolean contentLocked) {
+        return addStoredItem(null, item, amount, contentLocked);
+    }
+
+    @Deprecated
+    @Nullable
+    public synchronized ItemStack requestItem(ItemRequest itemRequest) {
+        return requestItem(null, itemRequest);
+    }
+
+    @Deprecated
+    @Nullable
+    public synchronized ItemStack requestItem0(@Nullable Location accessor, ItemRequest itemRequest) {
+        return requestItem(accessor, itemRequest);
+    }
+
+    @Deprecated
+    @Nullable
+    public synchronized ItemStack requestItem0(@Nullable Location accessor, ItemRequest itemRequest, boolean contentLocked) {
+        return requestItem(accessor, itemRequest, contentLocked);
+    }
+
+    @Deprecated
+    public synchronized void depositItemStacks0(
+        @Nullable Location accessor, Map<ItemStack, Long> itemsToDeposit, boolean contentLocked) {
+        depositItemStacks(accessor, itemsToDeposit, contentLocked);
+    }
+
+    @Deprecated
+    public synchronized void depositItemStack0(
+        @Nullable Location accessor, Map.Entry<ItemStack, Integer> entry, boolean contentLocked) {
+        depositItemStack(accessor, entry, contentLocked);
+    }
+
+    @Deprecated
+    public synchronized void depositItemStack0(
+        @Nullable Location accessor, Map<ItemStack, Integer> itemsToDeposit, boolean contentLocked) {
+        depositItemStack(accessor, itemsToDeposit, contentLocked);
+    }
+
+    @Deprecated
+    public void depositItemStack0(
+        @Nullable Location accessor, ItemStack[] itemsToDeposit, boolean contentLocked) {
+        depositItemStack(accessor, itemsToDeposit, contentLocked);
+    }
+
+    @Deprecated
+    public synchronized void depositItemStack0(
+        @Nullable Location accessor, @Nullable ItemStack itemsToDeposit, boolean contentLocked, boolean force) {
+        depositItemStack(accessor, itemsToDeposit, contentLocked, force);
+    }
+
+    @Deprecated
+    public void depositItemStack0(@Nullable Location accessor, ItemStack item, boolean contentLocked) {
+        depositItemStack(accessor, item, contentLocked);
+    }
+
+    @Deprecated
+    public void depositItemStack(@Nullable ItemStack item, boolean contentLocked) {
+        depositItemStack(null, item, contentLocked, false);
+    }
+
+    @Deprecated
+    public void depositItemStack0(@Nullable ItemStack item, boolean contentLocked) {
+        depositItemStack(null, item, contentLocked, false);
     }
 }

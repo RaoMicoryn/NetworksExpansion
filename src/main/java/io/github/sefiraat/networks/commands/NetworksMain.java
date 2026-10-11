@@ -180,7 +180,7 @@ public class NetworksMain implements TabExecutor {
         }
 
         clone.setAmount(amount);
-        data.depositItemStack0(player.getLocation(), clone, false);
+        data.depositItemStack(player.getLocation(), clone, false);
         NetworksDrawer.setStorageData(targetLocation, data);
         player.sendMessage(Lang.getString("messages.commands.updated-drawer"));
     }
@@ -224,7 +224,7 @@ public class NetworksMain implements TabExecutor {
         }
 
         clone.setAmount(1);
-        data.requestItem0(player.getLocation(), new ItemRequest(clone, amount));
+        data.requestItem(player.getLocation(), new ItemRequest(clone, amount));
         NetworksDrawer.setStorageData(targetLocation, data);
         player.sendMessage(Lang.getString("messages.commands.updated-drawer"));
     }
