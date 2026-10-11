@@ -109,7 +109,7 @@ public class SmartNetworkCraftingGridNewStyle extends AbstractGridNewStyle {
                     if (stack == null || stack.getType() == Material.AIR || stack.getAmount() <= 0) break label;
 
                     // 1. try store back into networks
-                    root.addItemStack0(menu.getLocation(), stack);
+                    root.addItemStack(menu.getLocation(), stack);
                     if (stack.getAmount() == 0) break label;
 
                     // 2. try store into output slots
@@ -262,7 +262,7 @@ public class SmartNetworkCraftingGridNewStyle extends AbstractGridNewStyle {
                             if (stack == null || stack.getType() == Material.AIR || stack.getAmount() <= 0) break label;
 
                             // 1. try store back into networks
-                            root.addItemStack0(menu.getLocation(), stack);
+                            root.addItemStack(menu.getLocation(), stack);
                             if (stack.getAmount() == 0) break label;
 
                             // 2. try store into output slots
@@ -283,7 +283,7 @@ public class SmartNetworkCraftingGridNewStyle extends AbstractGridNewStyle {
                             if (stack == null || stack.getType() == Material.AIR || stack.getAmount() <= 0) break label;
 
                             // 1. try store back into networks
-                            root.addItemStack0(menu.getLocation(), stack);
+                            root.addItemStack(menu.getLocation(), stack);
                         }
                     }
 
@@ -403,12 +403,12 @@ public class SmartNetworkCraftingGridNewStyle extends AbstractGridNewStyle {
             for (ItemStack template : templates) {
                 if (template == null) continue;
 
-                ItemStack item = root.getItemStack0(menu.getLocation(), new ItemRequest(template, 1));
+                ItemStack item = root.getItemStack(menu.getLocation(), new ItemRequest(template, 1));
                 if (item == null || item.getType() == Material.AIR) {
                     // return items
                     for (ItemStack i2 : got) {
                         // 1. try store back into networks
-                        root.addItemStack0(menu.getLocation(), i2);
+                        root.addItemStack(menu.getLocation(), i2);
                     }
                     return;
                 } else {
@@ -435,7 +435,7 @@ public class SmartNetworkCraftingGridNewStyle extends AbstractGridNewStyle {
                     if (c2.getAmount() == 0) break label;
 
                     // 2. try store back into networks
-                    root.addItemStack0(menu.getLocation(), c2);
+                    root.addItemStack(menu.getLocation(), c2);
                     if (c2.getAmount() == 0) break label;
 
                     // 3. try store into ingredients slots

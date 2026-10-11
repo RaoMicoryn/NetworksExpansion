@@ -48,6 +48,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
@@ -103,7 +104,7 @@ public class NetworkRoot extends NetworkNode {
     @Getter
     private final @Nullable ItemFlowRecord itemFlowRecord;
     @Getter
-    private Location controller;
+    private final Location controller;
 
     @Getter
     private boolean isOverburdened = false;
@@ -128,11 +129,6 @@ public class NetworkRoot extends NetworkNode {
         outputAbleCellDriveMenus = null;
 
     private final DriveCache driveCache = new DriveCache();
-
-    /**
-     * 用来 fallback
-     */
-    public static final Location SHARED_UNKNOWN_LOCATION = new Location(Bukkit.getWorlds().getFirst(), 0, 0, 0);
 
     /**
      * 聚合物品快照按网络（控制器位置）静态共享：root 实例每刻由 NetworkController 重建，
@@ -271,7 +267,9 @@ public class NetworkRoot extends NetworkNode {
         locations.put(accessLocation, value);
     }
 
-    public static @Nullable Map<Location, Integer> getPersistentAccessHistory(Location location) {
+    @Contract("null -> null")
+    public static @Nullable Map<Location, Integer> getPersistentAccessHistory(@Nullable Location location) {
+        if (location == null) return null;
         return persistentAccessHistory.get(location);
     }
 
@@ -285,16 +283,17 @@ public class NetworkRoot extends NetworkNode {
         persistentAccessHistory.put(location, locations);
     }
 
-    public static void addCountObservingAccessHistory(Location location, Location accessLocation) {
-        Map<Location, Integer> locations = observingAccessHistory.getOrDefault(location, new ConcurrentHashMap<>());
+    public static void addCountObservingAccessHistory(@Nullable Location accessor, Location accessLocation) {
+        if (accessor == null) return;
+        Map<Location, Integer> locations = observingAccessHistory.getOrDefault(accessor, new ConcurrentHashMap<>());
         int count = locations.getOrDefault(accessLocation, 0);
         if (count >= persistentThreshold) {
-            removeCountObservingAccessHistory(location, accessLocation);
-            addPersistentAccessHistory(location, accessLocation);
+            removeCountObservingAccessHistory(accessor, accessLocation);
+            addPersistentAccessHistory(accessor, accessLocation);
             return;
         }
         locations.put(accessLocation, count + 1);
-        observingAccessHistory.put(location, locations);
+        observingAccessHistory.put(accessor, locations);
     }
 
     public static Map<Location, Integer> getCountObservingAccessHistory(Location location) {
@@ -424,7 +423,6 @@ public class NetworkRoot extends NetworkNode {
 
     @Nullable
     public static NetworkStorage getNetworkStorage(BlockMenu blockMenu, boolean includeEmpty) {
-
         final QuantumCache cache = NetworkQuantumStorage.getCaches().get(blockMenu.getLocation());
 
         if (cache == null) return null;
@@ -461,6 +459,7 @@ public class NetworkRoot extends NetworkNode {
         BlockMenu menu = StorageCacheUtils.getMenu(barrelLocation);
         if (menu == null) return null;
 
+        // DO NOT use switch case:
         // Class loading of Barrel/StorageUnit happens during pattern testing, before the when guard
         // is evaluated, causing NoClassDefFoundError when FluffyMachines/InfinityExpansion is absent.
         // Use short-circuit conditions so instanceof is never reached when the plugin is missing.
@@ -489,24 +488,18 @@ public class NetworkRoot extends NetworkNode {
     public void registerNode(Location location, NodeType type) {
         nodeLocations.add(location);
         switch (type) {
+            /*
+             * Fix https://github.com/Sefiraat/Networks/issues/211
+             */
             case CELL -> {
-                /*
-                 * Fix https://github.com/Sefiraat/Networks/issues/211
-                 */
                 BlockMenu blockMenu = StorageCacheUtils.getMenu(location);
-                if (blockMenu == null || !(StorageCacheUtils.getSfItem(location) instanceof NetworkCell)) return;
+                if (blockMenu == null || isFakeCell(location)) return;
             }
             case GREEDY_BLOCK -> {
-                /*
-                 * Fix https://github.com/Sefiraat/Networks/issues/211
-                 */
                 BlockMenu blockMenu = StorageCacheUtils.getMenu(location);
                 if (blockMenu == null || !(StorageCacheUtils.getSfItem(location) instanceof NetworkGreedyBlock)) return;
             }
             case ADVANCED_GREEDY_BLOCK -> {
-                /*
-                 * Fix https://github.com/Sefiraat/Networks/issues/211
-                 */
                 BlockMenu blockMenu = StorageCacheUtils.getMenu(location);
                 if (blockMenu == null || !(StorageCacheUtils.getSfItem(location) instanceof AdvancedGreedyBlock)) return;
             }
@@ -545,7 +538,7 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * 外部代码绕过 {@link #addItemStack0(Location, ItemStack)} / {@link #getItemStack0(Location, ItemRequest)}
+     * 外部代码绕过 {@link #addItemStack(Location, ItemStack)} / {@link #getItemStack(Location, ItemRequest)}
      * 直接改动网络存储内容（如机器菜单槽位、元件驱动器内部缓存）后，必须调用本方法使聚合物品缓存失效。
      */
     public void markDirty() {
@@ -658,7 +651,7 @@ public class NetworkRoot extends NetworkNode {
         }
 
         for (BlockMenu blockMenu : getCellMenus()) {
-            if (!isRealCell(blockMenu)) continue;
+            if (isFakeCell(blockMenu)) continue;
             for (int slot : CELL_AVAILABLE_SLOTS) {
                 final ItemStack itemStack = blockMenu.getItemInSlot(slot);
                 if (itemStack != null && itemStack.getType() != Material.AIR) {
@@ -803,6 +796,8 @@ public class NetworkRoot extends NetworkNode {
         final Set<BlockMenu> menus = new HashSet<>();
         final Set<Location> addedLocations = new HashSet<>();
         var monitors = new HashSet<>(getNodes(NodeType.STORAGE_MONITOR));
+        if (mode.isInputAccess()) monitors.addAll(getNodes(NodeType.INPUT_ONLY_MONITOR));
+        if (mode.isOutputAccess()) monitors.addAll(getNodes(NodeType.OUTPUT_ONLY_MONITOR));
 
         for (Location monitorLocation : monitors) {
             final BlockFace face = NetworkDirectional.getSelectedFace(monitorLocation);
@@ -912,7 +907,7 @@ public class NetworkRoot extends NetworkNode {
 
         // Cells
         for (BlockMenu blockMenu : getCellMenus()) {
-            if (!isRealCell(blockMenu)) continue;
+            if (isFakeCell(blockMenu)) continue;
             for (int slot : CELL_AVAILABLE_SLOTS) {
                 final ItemStack itemStack = blockMenu.getItemInSlot(slot);
                 if (!StackUtils.itemsMatch(request, itemStack)) continue;
@@ -966,7 +961,7 @@ public class NetworkRoot extends NetworkNode {
         }
 
         for (BlockMenu blockMenu : getCellMenus()) {
-            if (!isRealCell(blockMenu)) continue;
+            if (isFakeCell(blockMenu)) continue;
             for (int slot : CELL_AVAILABLE_SLOTS) {
                 final ItemStack cellItem = blockMenu.getItemInSlot(slot);
                 if (cellItem != null && StackUtils.itemsMatch(cellItem, itemStack)) {
@@ -1039,7 +1034,7 @@ public class NetworkRoot extends NetworkNode {
         }
 
         for (BlockMenu blockMenu : getCellMenus()) {
-            if (!isRealCell(blockMenu)) continue;
+            if (isFakeCell(blockMenu)) continue;
             for (int slot : CELL_AVAILABLE_SLOTS) {
                 final ItemStack cellItem = blockMenu.getItemInSlot(slot);
                 if (cellItem != null) {
@@ -1100,10 +1095,10 @@ public class NetworkRoot extends NetworkNode {
         rootPower.getAndAdd(-removed);
     }
 
-    public List<ItemStack> getItemStacks0(Location location, List<ItemRequest> itemRequests) {
+    public List<ItemStack> getItemStacks(@Nullable Location accesor, List<ItemRequest> itemRequests) {
         List<ItemStack> retrievedItems = new ArrayList<>();
         for (ItemRequest request : itemRequests) {
-            ItemStack retrieved = getItemStack0(location, request);
+            ItemStack retrieved = getItemStack(accesor, request);
             if (retrieved != null) retrievedItems.add(retrieved);
         }
         return retrievedItems;
@@ -1136,7 +1131,6 @@ public class NetworkRoot extends NetworkNode {
 
                 final InfinityBarrel infinityBarrel = getInfinityBarrel(menu, unit, includeEmpty);
                 if (infinityBarrel != null && filter.test(infinityBarrel)) barrelSet.add(infinityBarrel);
-                continue;
             }
             else if (Networks.getSupportedPluginManager().isTsingshanTechnology()
                 && slimefunItem instanceof io.gitee.crankygoudan.tsingshantechnology.items.chucun.StorageUnit unit) {
@@ -1145,7 +1139,6 @@ public class NetworkRoot extends NetworkNode {
 
                 final TsingshanBarrel tsingshanBarrel = getTsingshanBarrel(menu, unit, includeEmpty);
                 if (tsingshanBarrel != null && filter.test(tsingshanBarrel)) barrelSet.add(tsingshanBarrel);
-                continue;
             }
             else if (Networks.getSupportedPluginManager().isFluffyMachines() && slimefunItem instanceof Barrel barrel) {
                 final BlockMenu menu = StorageCacheUtils.getMenu(testLocation);
@@ -1153,7 +1146,6 @@ public class NetworkRoot extends NetworkNode {
 
                 final FluffyBarrel fluffyBarrel = getFluffyBarrel(menu, barrel, includeEmpty);
                 if (fluffyBarrel != null && filter.test(fluffyBarrel)) barrelSet.add(fluffyBarrel);
-                continue;
             }
             else if (slimefunItem instanceof NetworkQuantumStorage) {
                 final BlockMenu menu = StorageCacheUtils.getMenu(testLocation);
@@ -1297,23 +1289,24 @@ public class NetworkRoot extends NetworkNode {
     }
 
     @Nullable
-    public ItemStack requestItem(Location accessor, ItemRequest request) {
-        return getItemStack0(accessor, request);
+    public ItemStack requestItem(@Nullable Location accessor, ItemRequest request) {
+        return getItemStack(accessor, request);
     }
 
     @Nullable
-    public ItemStack requestItem(Location accessor, ItemStack itemStack) {
+    public ItemStack requestItem(@Nullable Location accessor, ItemStack itemStack) {
         return requestItem(accessor, new ItemRequest(itemStack, itemStack.getAmount()));
     }
 
-    public void tryRecord(Location accessor, ItemRequest request) {
+    public void tryRecord(@Nullable Location accessor, ItemRequest request) {
+        if (accessor == null) return;
         if (recordFlow && itemFlowRecord != null) {
             itemFlowRecord.addAction(accessor, request);
         }
     }
 
-    public @Nullable ItemStack getItemStack0(Location accessor, ItemRequest request) {
-        return getItemStack0(accessor, request, null);
+    public @Nullable ItemStack getItemStack(@Nullable Location accessor, ItemRequest request) {
+        return getItemStack(accessor, request, null);
     }
 
     /**
@@ -1322,8 +1315,8 @@ public class NetworkRoot extends NetworkNode {
      * @param option   物品匹配选项（忽略项），为 null 时使用 {@link MatchOption#DEFAULT}
      * @return 匹配 {@code option} 的物品；数量为 0 时返回 null
      */
-    public @Nullable ItemStack getItemStack0(
-        Location accessor, ItemRequest request, @Nullable MatchOption option) {
+    public @Nullable ItemStack getItemStack(
+        @Nullable Location accessor, ItemRequest request, @Nullable MatchOption option) {
         ItemStack stackToReturn = null;
 
         if (request.getAmount() <= 0) {
@@ -1550,7 +1543,7 @@ public class NetworkRoot extends NetworkNode {
 
             // Cells
             for (BlockMenu blockMenu : getCellMenus()) {
-                if (!isRealCell(blockMenu)) continue;
+                if (isFakeCell(blockMenu)) continue;
                 for (int slot : CELL_AVAILABLE_SLOTS) {
                     final ItemStack itemStack = blockMenu.getItemInSlot(slot);
                     if (itemStack == null
@@ -1711,7 +1704,7 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * 批量取料：一次网络走查服务多个请求，走查家族顺序与 {@link #getItemStack0(Location, ItemRequest)} 完全一致
+     * 批量取料：一次网络走查服务多个请求，走查家族顺序与 {@link #getItemStack(Location, ItemRequest)} 完全一致
      * （访问历史优先 → 桶 → 抽屉 → 元件驱动器 → 细胞 → 合成器 → 高级贪心 → 贪心），
      * 唯一区别是每到访一个存储节点会尝试满足所有未完成请求，全部满足后立即结束走查。
      * <p>
@@ -1721,7 +1714,7 @@ public class NetworkRoot extends NetworkNode {
      * 与逐请求调用 getItemStack0 的行为差异：各请求在存储节点间的消耗顺序不同（各请求取到总量不变）、
      * recordFlow 记录顺序不同、access-limit 反馈整批至多一条。
      */
-    public List<@Nullable ItemStack> getItemStacksBatch0(Location accessor, List<ItemRequest> requests) {
+    public List<@Nullable ItemStack> getItemStacksBatch(Location accessor, List<ItemRequest> requests) {
         if (!allowAccessOutput(accessor)) {
             FeedbackSendable.sendFeedback0(accessor, FeedbackType.ROOT_LIMITING_ACCESS_OUTPUT);
             return List.of();
@@ -1982,7 +1975,7 @@ public class NetworkRoot extends NetworkNode {
 
             // Cells
             for (BlockMenu blockMenu : getCellMenus()) {
-                if (!isRealCell(blockMenu)) continue;
+                if (isFakeCell(blockMenu)) continue;
                 for (int slot : CELL_AVAILABLE_SLOTS) {
                     final ItemStack itemStack = blockMenu.getItemInSlot(slot);
                     if (itemStack == null || itemStack.getType() == Material.AIR) {
@@ -2170,7 +2163,7 @@ public class NetworkRoot extends NetworkNode {
         }
     }
 
-    /** getItemStacksBatch0 的单请求运行态：入参索引对齐、聚合结果与访问历史段簿记。 */
+    /** getItemStacksBatch 的单请求运行态：入参索引对齐、聚合结果与访问历史段簿记。 */
     private static final class BatchTake {
         private final ItemRequest request;
         private final int index;
@@ -2185,17 +2178,18 @@ public class NetworkRoot extends NetworkNode {
         }
     }
 
-    public void addItem(Location accessor, ItemStack incoming) {
-        addItemStack0(accessor, incoming);
+    public void addItem(@Nullable Location accessor, ItemStack incoming) {
+        addItemStack(accessor, incoming);
     }
 
-    public void tryRecord(Location accessor, @Nullable ItemStack before, int after) {
+    public void tryRecord(@Nullable Location accessor, @Nullable ItemStack before, int after) {
+        if (accessor == null) return;
         if (recordFlow && itemFlowRecord != null && before != null) {
             itemFlowRecord.addAction(accessor, before, after);
         }
     }
 
-    public void addItemStack0(Location accessor, ItemStack incoming) {
+    public void addItemStack(@Nullable Location accessor, ItemStack incoming) {
         if (!allowAccessInput(accessor)) {
             FeedbackSendable.sendFeedback0(accessor, FeedbackType.ROOT_LIMITING_ACCESS_INPUT);
             return;
@@ -2381,7 +2375,7 @@ public class NetworkRoot extends NetworkNode {
         }
 
         for (BlockMenu blockMenu : getCellMenus()) {
-            if (!isRealCell(blockMenu)) continue;
+            if (isFakeCell(blockMenu)) continue;
             blockMenu.markDirty();
             BlockMenuUtil.pushItem(blockMenu, incoming, CELL_AVAILABLE_SLOTS);
             if (incoming.getAmount() == 0) {
@@ -2412,10 +2406,10 @@ public class NetworkRoot extends NetworkNode {
      * 批量入库：一批物品按原有优先级走一遍存储，每种仓库只访问一次。
      * 未收完的物品保留剩余数量，由调用方回扣来源容器。
      */
-    public void addItemStacks0(Location accessor, List<ItemStack> incomings) {
+    public void addItemStacks(@Nullable Location accessor, List<ItemStack> incomings) {
         if (incomings.isEmpty()) return;
         for (var item : incomings) {
-            addItemStack0(accessor, item);
+            addItemStack(accessor, item);
         }
     }
 
@@ -2449,23 +2443,26 @@ public class NetworkRoot extends NetworkNode {
         return getOutputAbleDrawerData();
     }
 
-    public boolean allowAccessInput(Location accessor) {
+    public boolean allowAccessInput(@Nullable Location accessor) {
+        if (accessor == null) return true; // fallback
         Long lastTime = controlledAccessInputHistory.get(accessor);
         if (lastTime == null) return true;
 
         return System.currentTimeMillis() - lastTime > reduceMs;
     }
 
-    public boolean allowAccessOutput(Location accessor) {
+    public boolean allowAccessOutput(@Nullable Location accessor) {
+        if (accessor == null) return true; // fallback
         Long lastTime = controlledAccessOutputHistory.get(accessor);
         if (lastTime == null) return true;
         return System.currentTimeMillis() - lastTime > reduceMs;
     }
 
-    public void addTransportInputMiss(Location location) {
-        transportMissInputHistory.merge(location, 1, (a, b) -> {
+    public void addTransportInputMiss(@Nullable Location accessor) {
+        if (accessor == null) return;
+        transportMissInputHistory.merge(accessor, 1, (a, b) -> {
             if (a + b > transportMissThreshold) {
-                controlAccessInput(location);
+                controlAccessInput(accessor);
                 return transportMissThreshold;
             } else {
                 return a + b;
@@ -2473,10 +2470,11 @@ public class NetworkRoot extends NetworkNode {
         });
     }
 
-    public void addTransportOutputMiss(Location location) {
-        transportMissOutputHistory.merge(location, 1, (a, b) -> {
+    public void addTransportOutputMiss(@Nullable Location accessor) {
+        if (accessor == null) return;
+        transportMissOutputHistory.merge(accessor, 1, (a, b) -> {
             if (a + b > transportMissThreshold) {
-                controlAccessOutput(location);
+                controlAccessOutput(accessor);
                 return transportMissThreshold;
             } else {
                 return a + b;
@@ -2484,28 +2482,34 @@ public class NetworkRoot extends NetworkNode {
         });
     }
 
-    public void reduceTransportInputMiss(Location location) {
-        transportMissInputHistory.merge(location, -1, (a, b) -> Math.max(a + b, 0));
+    public void reduceTransportInputMiss(@Nullable Location accessor) {
+        if (accessor == null) return;
+        transportMissInputHistory.merge(accessor, -1, (a, b) -> Math.max(a + b, 0));
     }
 
-    public void reduceTransportOutputMiss(Location location) {
-        transportMissOutputHistory.merge(location, -1, (a, b) -> Math.max(a + b, 0));
+    public void reduceTransportOutputMiss(@Nullable Location accessor) {
+        if (accessor == null) return;
+        transportMissOutputHistory.merge(accessor, -1, (a, b) -> Math.max(a + b, 0));
     }
 
-    public void controlAccessInput(Location accessor) {
+    public void controlAccessInput(@Nullable Location accessor) {
+        if (accessor == null) return;
         controlledAccessInputHistory.put(accessor, System.currentTimeMillis());
     }
 
-    public void controlAccessOutput(Location accessor) {
+    public void controlAccessOutput(@Nullable Location accessor) {
+        if (accessor == null) return;
         controlledAccessOutputHistory.put(accessor, System.currentTimeMillis());
     }
 
-    public void uncontrolAccessInput(Location accessor) {
+    public void uncontrolAccessInput(@Nullable Location accessor) {
+        if (accessor == null) return;
         controlledAccessInputHistory.remove(accessor);
         reduceTransportInputMiss(accessor);
     }
 
-    public void uncontrolAccessOutput(Location accessor) {
+    public void uncontrolAccessOutput(@Nullable Location accessor) {
+        if (accessor == null) return;
         controlledAccessOutputHistory.remove(accessor);
         reduceTransportOutputMiss(accessor);
     }
@@ -2517,23 +2521,107 @@ public class NetworkRoot extends NetworkNode {
     /**
      * 说实话这个治标不治本
      */
+    public static boolean isFakeCell(BlockMenu menu) {
+        return !isRealCell(menu.getLocation());
+    }
+
     public static boolean isRealCell(BlockMenu menu) {
-        return StorageCacheUtils.getSfItem(menu.getLocation()) instanceof NetworkCell;
+        return isRealCell(menu.getLocation());
     }
 
+    public static boolean isFakeCell(Location location) {
+        return !isRealCell(location);
+    }
+
+    public static boolean isRealCell(Location location) {
+        return StorageCacheUtils.getSfItem(location) instanceof NetworkCell;
+    }
+
+    private <K, V> HashMap<V, K> reverseMap(Map<K, V> map) {
+        HashMap<V, K> newMap = new HashMap<>();
+        for (var e : map.entrySet()) newMap.put(e.getValue(), e.getKey());
+        return newMap;
+    }
+
+    // ============= Fallback methods =============
+
     /**
-     * fallback, use {@link #getItemStack0(Location, ItemRequest)} instead.
+     * fallback, use {@link #getItemStack(Location, ItemRequest)} instead.
      */
     @Deprecated
+    @Nullable
     public ItemStack getItemStack(ItemRequest request) {
-        return getItemStack0(SHARED_UNKNOWN_LOCATION, request);
+        return getItemStack(null, request);
     }
 
     /**
-     * fallback, use {@link #addItemStack0(Location, ItemStack)} instead.
+     * fallback, use {@link #addItemStack(Location, ItemStack)} instead.
      */
     @Deprecated
-    public void addItemStack(ItemStack stack) {
-        addItemStack0(SHARED_UNKNOWN_LOCATION, stack);
+    public void addItemStack(ItemStack incoming) {
+        addItemStack(null, incoming);
+    }
+
+    @Deprecated
+    public Map<StorageUnitData, Location> getCargoStorageUnitDatas() {
+        return reverseMap(getDrawerData());
+    }
+
+    @Deprecated
+    public Map<StorageUnitData, Location> getInputAbleCargoStorageUnitDatas() {
+        return reverseMap(getInputAbleDrawerData());
+    }
+
+    @Deprecated
+    public Map<StorageUnitData, Location> getOutputAbleCargoStorageUnitDatas() {
+        return reverseMap(getOutputAbleDrawerData());
+    }
+
+    @Deprecated
+    public List<ItemStack> getItemStacks(List<ItemRequest> itemRequests) {
+        return getItemStacks(null, itemRequests);
+    }
+
+    @Deprecated
+    public List<ItemStack> getItemStacks0(@Nullable Location accesor, List<ItemRequest> itemRequests) {
+        return getItemStacks(accesor, itemRequests);
+    }
+
+    @Deprecated
+    public @Nullable ItemStack getItemStack0(@Nullable Location accessor, ItemRequest request) {
+        return getItemStack(accessor, request, null);
+    }
+
+    @Deprecated
+    public @Nullable ItemStack getItemStack0(
+        @Nullable Location accessor, ItemRequest request, @Nullable MatchOption option) {
+        return getItemStack(accessor, request, option);
+    }
+
+    @Deprecated
+    @Nullable
+    public ItemStack requestItem(ItemRequest request) {
+        return getItemStack(null, request);
+    }
+
+    @Deprecated
+    @Nullable
+    public ItemStack requestItem(ItemStack itemStack) {
+        return requestItem(null, new ItemRequest(itemStack, itemStack.getAmount()));
+    }
+
+    @Deprecated
+    public void addItemStack0(@Nullable Location accessor, ItemStack incoming) {
+        addItemStack(accessor, incoming);
+    }
+
+    @Deprecated
+    public void addItemStacks0(@Nullable Location accessor, List<ItemStack> incomings) {
+        addItemStacks(accessor, incomings);
+    }
+
+    @Deprecated
+    public List<@Nullable ItemStack> getItemStacksBatch0(Location accessor, List<ItemRequest> requests) {
+        return getItemStacksBatch(accessor, requests);
     }
 }

@@ -533,7 +533,7 @@ public class HangingGridNewStyle extends NetworkGridNewStyle implements HangingB
         @Nullable ItemStack itemStack,
         @NotNull Screen screen) {
         if (itemStack != null && itemStack.getType() != Material.AIR) {
-            root.addItemStack0(screen.getLocation(), itemStack);
+            root.addItemStack(screen.getLocation(), itemStack);
         }
     }
 }

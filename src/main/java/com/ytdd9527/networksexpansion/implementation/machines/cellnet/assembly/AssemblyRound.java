@@ -352,12 +352,12 @@ final class AssemblyRound {
         ItemStack probe = template.clone();
         probe.setAmount((int) Math.min(amount, Integer.MAX_VALUE));
         return withVoidSuspended(() -> {
-            root.addItemStack0(accessor, probe);
+            root.addItemStack(accessor, probe);
             long absorbed = amount - Math.max(0L, probe.getAmount());
             if (absorbed <= 0) {
                 return 0L;
             }
-            ItemStack got = root.getItemStack0(accessor,
+            ItemStack got = root.getItemStack(accessor,
                 new ItemRequest(template.clone(), (int) Math.min(absorbed, Integer.MAX_VALUE)));
             long gotAmount = got == null || got.getType().isAir() ? 0L : got.getAmount();
             if (gotAmount < absorbed) {
@@ -533,7 +533,7 @@ final class AssemblyRound {
                 long chunk = Math.min(remaining, Integer.MAX_VALUE);
                 ItemStack out = template.clone();
                 out.setAmount((int) chunk);
-                root.addItemStack0(location, out);
+                root.addItemStack(location, out);
                 long leftover = Math.max(0L, out.getAmount());
                 if (leftover > 0) {
                     bufferPending(location, template, leftover);
@@ -591,7 +591,7 @@ final class AssemblyRound {
                     missing -= Integer.MAX_VALUE;
                 }
             }
-            List<ItemStack> fetched = root.getItemStacksBatch0(accessor, requests);
+            List<ItemStack> fetched = root.getItemStacksBatch(accessor, requests);
             for (int i = 0; i < fetched.size(); i++) {
                 ItemStack got = fetched.get(i);
                 long amount = got == null || got.getType().isAir() ? 0L : got.getAmount();
@@ -653,7 +653,7 @@ final class AssemblyRound {
             return direct;
         }
         int shortfall = need - directAmount;
-        ItemStack fallback = root.getItemStack0(accessor,
+        ItemStack fallback = root.getItemStack(accessor,
             new ItemRequest(ingredient.template().clone(), shortfall));
         if (fallback == null || fallback.getType().isAir()) {
             return direct;
@@ -695,7 +695,7 @@ final class AssemblyRound {
             long total) {
         ItemStack out = template.clone();
         out.setAmount((int) Math.min(total, Integer.MAX_VALUE));
-        root.addItemStack0(accessor, out);
+        root.addItemStack(accessor, out);
         if (!out.getType().isAir() && out.getAmount() > 0) {
             bufferPending(accessor, template, out.getAmount());
             return false;
@@ -711,7 +711,7 @@ final class AssemblyRound {
             if (item.getType().isAir() || item.getAmount() <= 0) {
                 continue;
             }
-            root.addItemStack0(accessor, item);
+            root.addItemStack(accessor, item);
             if (!item.getType().isAir() && item.getAmount() > 0) {
                 bufferPending(accessor, item, item.getAmount());
             }
@@ -766,7 +766,7 @@ final class AssemblyRound {
                 long push = Math.min(remaining, Integer.MAX_VALUE);
                 ItemStack stack = key.getItemStack();
                 stack.setAmount((int) push);
-                root.addItemStack0(accessor, stack);
+                root.addItemStack(accessor, stack);
                 long absorbed = push - Math.max(0L, stack.getAmount());
                 if (absorbed <= 0L) {
                     break;

@@ -125,7 +125,7 @@ public abstract class AbstractGridNewStyle extends AbstractGrid implements Keybi
     @Override
     public void addToInventory(
         Player player, NodeDefinition definition, GridItemRequest request, BlockMenu menu) {
-        InventoryUtil.give(player, definition.getNode().getRoot().getItemStack0(menu.getLocation(), request));
+        InventoryUtil.give(player, definition.getNode().getRoot().getItemStack(menu.getLocation(), request));
     }
 
     @Override
@@ -142,7 +142,7 @@ public abstract class AbstractGridNewStyle extends AbstractGrid implements Keybi
             return;
         }
 
-        ItemStack requestingStack = definition.getNode().getRoot().getItemStack0(blockMenu.getLocation(), request);
+        ItemStack requestingStack = definition.getNode().getRoot().getItemStack(blockMenu.getLocation(), request);
         setCursor(player, cursor, requestingStack);
     }
 

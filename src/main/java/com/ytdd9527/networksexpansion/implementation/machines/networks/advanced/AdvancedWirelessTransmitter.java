@@ -227,10 +227,10 @@ public class AdvancedWirelessTransmitter extends AdvancedDirectional implements 
             return;
         }
         for (ItemStack template : templates) {
-            ItemStack itemStack = src.getItemStack0(location, new ItemRequest(template, getLimitQuantity(location)));
+            ItemStack itemStack = src.getItemStack(location, new ItemRequest(template, getLimitQuantity(location)));
             if (itemStack != null && itemStack.getAmount() > 0) {
-                tgt.addItemStack0(target, itemStack);
-                src.addItemStack0(location, itemStack);
+                tgt.addItemStack(target, itemStack);
+                src.addItemStack(location, itemStack);
             }
         }
         sendFeedback(location, FeedbackType.WORKING);

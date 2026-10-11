@@ -129,7 +129,7 @@ public class VisualGrid extends AbstractGridNewStyle implements Keybindable {
         var root = node.getNode().getRoot();
         var items = active.getLocation().getWorld().getNearbyEntitiesByType(Item.class, active.getLocation(), 1, 1, 1);
         for (var e : items) {
-            root.addItemStack0(location, e.getItemStack());
+            root.addItemStack(location, e.getItemStack());
             if (e.getItemStack().getAmount() == 0) {
                 e.remove();
             }

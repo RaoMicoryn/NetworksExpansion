@@ -130,7 +130,7 @@ public class AdvancedPurger extends NetworkObject implements RecipeDisplayItem {
 
             MatchOption matchOption = MatchOptionMenu.getMatchOption(blockMenu.getLocation());
             ItemRequest itemRequest = new ItemRequest(clone, clone.getMaxStackSize());
-            ItemStack retrieved = definition.getNode().getRoot().getItemStack0(blockMenu.getLocation(), itemRequest, matchOption);
+            ItemStack retrieved = definition.getNode().getRoot().getItemStack(blockMenu.getLocation(), itemRequest, matchOption);
             if (retrieved != null) {
                 retrieved.setAmount(0);
                 Location location = blockMenu.getLocation().clone().add(0.5, 1.2, 0.5);

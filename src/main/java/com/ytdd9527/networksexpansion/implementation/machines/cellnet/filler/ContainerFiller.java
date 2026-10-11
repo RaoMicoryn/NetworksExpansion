@@ -334,7 +334,7 @@ public class ContainerFiller extends SpecialSlimefunItem {
                         break;
                     }
                 } else {
-                    List<ItemStack> results = root.getItemStacksBatch0(location, requests);
+                    List<ItemStack> results = root.getItemStacksBatch(location, requests);
                     for (int r = 0; r < requests.size(); r++) {
                         ItemStack got = results.get(r);
                         long amount = got == null || got.getType().isAir() ? 0L : got.getAmount();
@@ -346,7 +346,7 @@ public class ContainerFiller extends SpecialSlimefunItem {
                         if (leftover > 0L) {
                             ItemStack back = requestTemplate.get(r).clone();
                             back.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
-                            root.addItemStack0(location, back);
+                            root.addItemStack(location, back);
                         }
                         filledTotal += acc;
                     }
@@ -427,7 +427,7 @@ public class ContainerFiller extends SpecialSlimefunItem {
         if (buffer == null) {
             return;
         }
-        root.addItemStack0(location, buffer);
+        root.addItemStack(location, buffer);
         if (buffer.getAmount() > 0) {
             FillerPdc.saveBuffer(location, buffer);
         } else {

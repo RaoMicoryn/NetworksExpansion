@@ -72,7 +72,7 @@ public class NetworkWirelessReceiver extends NetworkObject {
             return;
         }
 
-        definition.getNode().getRoot().addItemStack0(blockMenu.getLocation(), itemStack);
+        definition.getNode().getRoot().addItemStack(blockMenu.getLocation(), itemStack);
         sendFeedback(blockMenu.getLocation(), FeedbackType.WORKING);
     }
 

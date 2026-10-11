@@ -159,7 +159,7 @@ public abstract class AbstractGrid extends NetworkObject {
             return;
         }
 
-        definition.getNode().getRoot().addItemStack0(blockMenu.getLocation(), itemStack);
+        definition.getNode().getRoot().addItemStack(blockMenu.getLocation(), itemStack);
     }
 
     public ItemStack getFilterStack(@Nullable String filter) {
@@ -399,7 +399,7 @@ public abstract class AbstractGrid extends NetworkObject {
         final ItemStack cursor = player.getItemOnCursor();
         if (cursor.getType() != Material.AIR
             && !StackUtils.itemsMatch(clone, StackUtils.getAsQuantity(player.getItemOnCursor(), 1))) {
-            root.addItemStack0(screen.getLocation(), player.getItemOnCursor());
+            root.addItemStack(screen.getLocation(), player.getItemOnCursor());
             return;
         }
 
@@ -423,7 +423,7 @@ public abstract class AbstractGrid extends NetworkObject {
     @ParametersAreNonnullByDefault
     private void addToInventory(
         Player player, NodeDefinition definition, GridItemRequest request, ClickAction action, Screen screen) {
-        ItemStack requestingStack = definition.getNode().getRoot().getItemStack0(screen.getLocation(), request);
+        ItemStack requestingStack = definition.getNode().getRoot().getItemStack(screen.getLocation(), request);
 
         if (requestingStack == null) {
             return;
@@ -431,7 +431,7 @@ public abstract class AbstractGrid extends NetworkObject {
 
           InventoryUtil.addItem(player, requestingStack);
           if (requestingStack.getAmount() > 0) {
-              definition.getNode().getRoot().addItemStack0(screen.getLocation(), requestingStack);
+              definition.getNode().getRoot().addItemStack(screen.getLocation(), requestingStack);
           }
     }
 
@@ -450,7 +450,7 @@ public abstract class AbstractGrid extends NetworkObject {
             return;
         }
 
-        ItemStack requestingStack = definition.getNode().getRoot().getItemStack0(screen.getLocation(), request);
+        ItemStack requestingStack = definition.getNode().getRoot().getItemStack(screen.getLocation(), request);
         setCursor(player, cursor, requestingStack);
     }
 
@@ -535,7 +535,7 @@ public abstract class AbstractGrid extends NetworkObject {
         }
 
         if (itemStack != null && itemStack.getType() != Material.AIR && !StackUtils.isBlacklisted(itemStack)) {
-            definition.getNode().getRoot().addItemStack0(screen.getLocation(), itemStack);
+            definition.getNode().getRoot().addItemStack(screen.getLocation(), itemStack);
         }
     }
 

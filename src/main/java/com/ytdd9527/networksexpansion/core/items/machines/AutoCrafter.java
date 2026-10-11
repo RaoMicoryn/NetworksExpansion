@@ -106,7 +106,7 @@ public class AutoCrafter extends NetworkObject implements SoftCellBannable, Craf
         if (!withholding) {
             final ItemStack stored = blockMenu.getItemInSlot(OUTPUT_SLOT);
             if (stored != null && stored.getType() != Material.AIR) {
-                root.addItemStack0(blockMenu.getLocation(), stored);
+                root.addItemStack(blockMenu.getLocation(), stored);
             }
         }
 
@@ -200,7 +200,7 @@ public class AutoCrafter extends NetworkObject implements SoftCellBannable, Craf
         for (int i = 0; i < instance.getRecipeItems().length; i++) {
             final ItemStack requested = instance.getRecipeItems()[i];
             if (requested != null) {
-                final ItemStack fetched = root.getItemStack0(
+                final ItemStack fetched = root.getItemStack(
                     blockMenu.getLocation(), new ItemRequest(requested, requested.getAmount() * blueprintAmount));
                 fetcheds[i] = fetched;
                 if (fetched == null || fetched.getAmount() < requested.getAmount() * blueprintAmount) {
@@ -227,7 +227,7 @@ public class AutoCrafter extends NetworkObject implements SoftCellBannable, Craf
         }
 
         if (!withholding && existing != null && existing.getType() != Material.AIR) {
-            root.addItemStack0(blockMenu.getLocation(), crafted);
+            root.addItemStack(blockMenu.getLocation(), crafted);
         }
         if (crafted != null && crafted.getType() != Material.AIR) {
             BlockMenuUtil.pushItem(blockMenu, crafted, OUTPUT_SLOT);
@@ -240,7 +240,7 @@ public class AutoCrafter extends NetworkObject implements SoftCellBannable, Craf
         @NotNull NetworkRoot root, @Nullable ItemStack @NotNull [] inputs, @NotNull BlockMenu blockMenu) {
         for (ItemStack input : inputs) {
             if (input != null) {
-                root.addItemStack0(blockMenu.getLocation(), input);
+                root.addItemStack(blockMenu.getLocation(), input);
             }
         }
     }

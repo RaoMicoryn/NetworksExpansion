@@ -139,7 +139,7 @@ public final class CollectService {
                 batch.addAll(player.getInventory().addItem(drop).values());
             }
         }
-        root.addItemStacks0(netLocation, batch);
+        root.addItemStacks(netLocation, batch);
         List<ItemStack> leftovers = new ArrayList<>();
         for (ItemStack stack : batch) {
             if (stack.getAmount() > 0) {

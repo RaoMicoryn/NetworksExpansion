@@ -8,16 +8,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@NullMarked
 public interface FeedbackSendable {
     Map<UUID, Set<Location>> SUBSCRIBED_LOCATIONS = new ConcurrentHashMap<>();
 
-    static void subscribe(@NotNull Player player, Location location) {
+    static void subscribe(Player player, Location location) {
         UUID key = player.getUniqueId();
         if (!SUBSCRIBED_LOCATIONS.containsKey(key)) {
             SUBSCRIBED_LOCATIONS.put(key, ConcurrentHashMap.newKeySet());
@@ -25,14 +28,14 @@ public interface FeedbackSendable {
         SUBSCRIBED_LOCATIONS.get(key).add(location);
     }
 
-    static void unsubscribe(@NotNull Player player, Location location) {
+    static void unsubscribe(Player player, Location location) {
         UUID key = player.getUniqueId();
         if (SUBSCRIBED_LOCATIONS.containsKey(key)) {
             SUBSCRIBED_LOCATIONS.get(key).remove(location);
         }
     }
 
-    static boolean hasSubscribed(@NotNull Player player, Location location) {
+    static boolean hasSubscribed(Player player, Location location) {
         UUID key = player.getUniqueId();
         if (SUBSCRIBED_LOCATIONS.containsKey(key)) {
             return SUBSCRIBED_LOCATIONS.get(key).contains(location);
@@ -40,7 +43,8 @@ public interface FeedbackSendable {
         return false;
     }
 
-    static void sendFeedback0(@NotNull Location location, @NotNull FeedbackType type) {
+    static void sendFeedback0(@Nullable Location location, FeedbackType type) {
+        if (location == null) return;
         for (UUID uuid : SUBSCRIBED_LOCATIONS.keySet()) {
             if (SUBSCRIBED_LOCATIONS.get(uuid).contains(location)) {
                 dispatch(uuid, location, type.getMessage());
@@ -49,7 +53,7 @@ public interface FeedbackSendable {
     }
 
     // Async machine ticks call this; messaging a player is main-thread-only work
-    static void dispatch(@NotNull UUID uuid, @NotNull Location location, @NotNull String message) {
+    static void dispatch(UUID uuid, Location location, String message) {
         Runnable task = () -> {
             Player player = Bukkit.getServer().getPlayer(uuid);
             if (player != null) {
@@ -64,7 +68,7 @@ public interface FeedbackSendable {
         }
     }
 
-    default void sendFeedback(@NotNull Location location, @NotNull FeedbackType type) {
+    default void sendFeedback(Location location, FeedbackType type) {
         for (UUID uuid : SUBSCRIBED_LOCATIONS.keySet()) {
             if (SUBSCRIBED_LOCATIONS.get(uuid).contains(location)) {
                 dispatch(uuid, location, type.getMessage());

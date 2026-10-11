@@ -51,7 +51,7 @@ public interface WhitelistedVanillaGrabber extends WhitelistedGrabber {
 
     default boolean grabItem(@NotNull NetworkRoot root, @NotNull BlockMenu blockMenu, @Nullable ItemStack stack) {
         if (stack != null && stack.getType() != Material.AIR) {
-            root.addItemStack0(blockMenu.getLocation(), stack);
+            root.addItemStack(blockMenu.getLocation(), stack);
             return true;
         } else {
             return false;

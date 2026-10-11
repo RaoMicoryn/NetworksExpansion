@@ -213,11 +213,11 @@ public class AssemblyWorkshop extends SpecialSlimefunItem {
 
         ItemStack cardStack = menu.getItemInSlot(CARD_SLOT);
         if (cardStack == null || cardStack.getType().isAir() || AssemblyCard.readCard(cardStack) != null) {
-            ItemStack pulled = root.getItemStack0(location,
+            ItemStack pulled = root.getItemStack(location,
                 new ItemRequest(ExpansionItems.ASSEMBLY_CARD.getItem(), 64));
             if (pulled == null || !AssemblyCard.isCard(pulled) || AssemblyCard.readCard(pulled) != null) {
                 if (pulled != null) {
-                    root.addItemStack0(location, pulled);
+                    root.addItemStack(location, pulled);
                 }
                 player.sendMessage(Lang.getString(CellnetText.WORKSHOP_NO_CARD));
                 return false;

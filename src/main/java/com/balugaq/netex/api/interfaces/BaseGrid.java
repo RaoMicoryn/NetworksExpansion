@@ -51,7 +51,7 @@ public interface BaseGrid {
                     NodeDefinition definition = NetworkStorage.getNode(menu.getLocation());
                     if (definition == null || definition.getNode() == null)
                         return ActionResult.of(MultiActionHandle.CONTINUE, false);
-                      definition.getNode().getRoot().addItemStack0(menu.getLocation(), player.getItemOnCursor());
+                      definition.getNode().getRoot().addItemStack(menu.getLocation(), player.getItemOnCursor());
                     return ActionResult.of(MultiActionHandle.BREAK, false);
                 });
 

@@ -151,7 +151,7 @@ public class NetworkControlV extends NetworkDirectional implements SoftCellBanna
         }
 
         final ItemRequest request = new ItemRequest(templateStack.clone(), 1);
-        final ItemStack fetchedStack = definition.getNode().getRoot().getItemStack0(blockMenu.getLocation(), request);
+        final ItemStack fetchedStack = definition.getNode().getRoot().getItemStack(blockMenu.getLocation(), request);
 
         if (fetchedStack == null || fetchedStack.getAmount() < 1) {
             sendFeedback(blockMenu.getLocation(), FeedbackType.NOT_ENOUGH_RESOURCES);

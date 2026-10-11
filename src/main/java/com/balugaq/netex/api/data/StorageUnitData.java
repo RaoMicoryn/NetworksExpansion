@@ -12,8 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,10 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings({"UnusedAssignment", "DuplicatedCode"})
 @ToString
+@NullMarked
 public class StorageUnitData {
     public static final Map<Location, Map<Integer, Integer>>
         /* from -> to slot -> Access times */ observingAccessHistory = new ConcurrentHashMap<>(),
-        /* from -> to slot -> Cache miss times */ persistentAccessHistory =new ConcurrentHashMap<>();
+        /* from -> to slot -> Cache miss times */ persistentAccessHistory = new ConcurrentHashMap<>();
 
     @Getter
     private final int id;
@@ -48,7 +49,7 @@ public class StorageUnitData {
     private Location lastLocation;
 
     public StorageUnitData(
-        int id, @NotNull String ownerUUID, StorageUnitType sizeType, boolean isPlaced, Location lastLocation) {
+        int id, String ownerUUID, StorageUnitType sizeType, boolean isPlaced, Location lastLocation) {
         this(
             id,
             Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID)),
@@ -60,7 +61,7 @@ public class StorageUnitData {
 
     public StorageUnitData(
         int id,
-        @NotNull String ownerUUID,
+        String ownerUUID,
         StorageUnitType sizeType,
         boolean isPlaced,
         Location lastLocation,
@@ -80,56 +81,62 @@ public class StorageUnitData {
         this.sizeType = sizeType;
         this.isPlaced = isPlaced;
         this.lastLocation = lastLocation;
-        this.storedItems = storedItems; //!! DO NOT USE `new` keyword to create a new ConcurrentHashMap, this will cause data lose!!
+        this.storedItems = storedItems; //!! DO NOT USE `new` keyword to create a new ConcurrentHashMap, this will cause a deep copy, leading to data lose!!
     }
 
-    public static void addPersistentAccessHistory(Location location, Integer accessLocation) {
-        var locations = persistentAccessHistory.getOrDefault(location, new ConcurrentHashMap<>());
+    public static void addPersistentAccessHistory(@Nullable Location accessor, int accessLocation) {
+        if (accessor == null) return;
+        var locations = persistentAccessHistory.getOrDefault(accessor, new ConcurrentHashMap<>());
         locations.put(accessLocation, 0);
-        persistentAccessHistory.put(location, locations);
+        persistentAccessHistory.put(accessor, locations);
     }
 
-    public static void addCacheMiss(Location location, Integer accessLocation) {
-        var locations = persistentAccessHistory.getOrDefault(location, new ConcurrentHashMap<>());
+    public static void addCacheMiss(@Nullable Location accessor, int accessLocation) {
+        if (accessor == null) return;
+        var locations = persistentAccessHistory.getOrDefault(accessor, new ConcurrentHashMap<>());
         int value = locations.getOrDefault(accessLocation, 0) + 1;
         if (value > NetworkRoot.cacheMissThreshold) {
-            removePersistentAccessHistory(location, accessLocation);
+            removePersistentAccessHistory(accessor, accessLocation);
             return;
         }
         locations.put(accessLocation, value);
-        persistentAccessHistory.put(location, locations);
+        persistentAccessHistory.put(accessor, locations);
     }
 
-    public static void minusCacheMiss(Location location, Integer accessLocation) {
-        var locations = persistentAccessHistory.getOrDefault(location, new ConcurrentHashMap<>());
+    public static void minusCacheMiss(Location accessor, int accessLocation) {
+        var locations = persistentAccessHistory.getOrDefault(accessor, new ConcurrentHashMap<>());
         int value = Math.max(locations.getOrDefault(accessLocation, 0) - 1, 0);
         locations.put(accessLocation, value);
     }
 
-    public static Map<Integer, Integer> getPersistentAccessHistory(Location location) {
-        return persistentAccessHistory.getOrDefault(location, new ConcurrentHashMap<>());
+    @Nullable
+    public static Map<Integer, Integer> getPersistentAccessHistory(@Nullable Location accessor) {
+        if (accessor == null) return null;
+        return persistentAccessHistory.getOrDefault(accessor, new ConcurrentHashMap<>());
     }
 
-    public static void removePersistentAccessHistory(Location location) {
-        persistentAccessHistory.remove(location);
+    public static void removePersistentAccessHistory(Location accessor) {
+        persistentAccessHistory.remove(accessor);
     }
 
-    public static void removePersistentAccessHistory(Location location, Integer accessLocation) {
-        var locations = persistentAccessHistory.getOrDefault(location, new ConcurrentHashMap<>());
+    public static void removePersistentAccessHistory(@Nullable Location accessor, int accessLocation) {
+        if (accessor == null) return;
+        var locations = persistentAccessHistory.getOrDefault(accessor, new ConcurrentHashMap<>());
         locations.remove(accessLocation);
-        persistentAccessHistory.put(location, locations);
+        persistentAccessHistory.put(accessor, locations);
     }
 
-    public static void addCountObservingAccessHistory(Location location, Integer accessLocation) {
-        var locations = observingAccessHistory.getOrDefault(location, new HashMap<>());
-        Integer count = locations.getOrDefault(accessLocation, 0);
+    public static void addCountObservingAccessHistory(@Nullable Location accessor, int accessLocation) {
+        if (accessor == null) return;
+        var locations = observingAccessHistory.getOrDefault(accessor, new HashMap<>());
+        int count = locations.getOrDefault(accessLocation, 0);
         if (count >= NetworkRoot.persistentThreshold) {
-            removeCountObservingAccessHistory(location, accessLocation);
-            addPersistentAccessHistory(location, accessLocation);
+            removeCountObservingAccessHistory(accessor, accessLocation);
+            addPersistentAccessHistory(accessor, accessLocation);
             return;
         }
         locations.put(accessLocation, count + 1);
-        observingAccessHistory.put(location, locations);
+        observingAccessHistory.put(accessor, locations);
     }
 
     public static Map<Integer, Integer> getCountObservingAccessHistory(Location location) {
@@ -146,7 +153,7 @@ public class StorageUnitData {
         observingAccessHistory.put(location, locations);
     }
 
-    public static boolean isBlacklisted(@NotNull ItemStack itemStack) {
+    public static boolean isBlacklisted(ItemStack itemStack) {
         return StackUtils.isBlacklisted(itemStack);
     }
 
@@ -157,14 +164,14 @@ public class StorageUnitData {
         }
     }
 
-    public synchronized void setSizeType(@NotNull StorageUnitType sizeType) {
+    public synchronized void setSizeType(StorageUnitType sizeType) {
         if (this.sizeType != sizeType) {
             this.sizeType = sizeType;
             DataStorage.setContainerSizeType(id, sizeType);
         }
     }
 
-    public synchronized void setLastLocation(@NotNull Location lastLocation) {
+    public synchronized void setLastLocation(Location lastLocation) {
         if (this.lastLocation != lastLocation) {
             this.lastLocation = lastLocation;
             DataStorage.setContainerLocation(id, lastLocation);
@@ -223,19 +230,19 @@ public class StorageUnitData {
     }
 
     @Deprecated
-    public @NotNull List<ItemContainer> getStoredItems() {
+    public List<ItemContainer> getStoredItems() {
         return copyStoredItems();
     }
 
-    public @NotNull List<ItemContainer> copyStoredItems() {
+    public List<ItemContainer> copyStoredItems() {
         return new ArrayList<>(storedItems.values());
     }
 
-    public @NotNull Collection<ItemContainer> getStoredItemsDirectly() {
+    public Collection<ItemContainer> getStoredItemsDirectly() {
         return storedItems.values();
     }
 
-    public @NotNull Map<Integer, ItemContainer> copyStoredItemsMap() {
+    public Map<Integer, ItemContainer> copyStoredItemsMap() {
         return new ConcurrentHashMap<>(storedItems);
     }
 
@@ -245,7 +252,7 @@ public class StorageUnitData {
 
     @Deprecated
     @Nullable
-    public synchronized ItemStack requestItem(@NotNull ItemRequest itemRequest) {
+    public synchronized ItemStack requestItem(ItemRequest itemRequest) {
         ItemStack item = itemRequest.getItemStack();
         if (item == null) {
             return null;
@@ -270,12 +277,12 @@ public class StorageUnitData {
     }
 
     @Nullable
-    public synchronized ItemStack requestItem0(@NotNull Location accessor, @NotNull ItemRequest itemRequest) {
+    public synchronized ItemStack requestItem0(@Nullable Location accessor, ItemRequest itemRequest) {
         return requestItem0(accessor, itemRequest, true);
     }
 
     @Nullable
-    public synchronized ItemStack requestItem0(@NotNull Location accessor, @NotNull ItemRequest itemRequest, boolean contentLocked) {
+    public synchronized ItemStack requestItem0(@Nullable Location accessor, ItemRequest itemRequest, boolean contentLocked) {
         ItemStack item = itemRequest.getItemStack();
         if (item == null) {
             return null;
@@ -365,7 +372,7 @@ public class StorageUnitData {
     }
 
     public synchronized void depositItemStacks0(
-        @NotNull Location accessor, @NotNull Map<ItemStack, Long> itemsToDeposit, boolean contentLocked) {
+        Location accessor, Map<ItemStack, Long> itemsToDeposit, boolean contentLocked) {
         for (Map.Entry<ItemStack, Long> entry : itemsToDeposit.entrySet()) {
             if (entry.getValue() > Integer.MAX_VALUE) {
                 // rollback to MAX_VALUE
@@ -384,7 +391,7 @@ public class StorageUnitData {
     }
 
     public synchronized void depositItemStack0(
-        @NotNull Location accessor, @NotNull Map.Entry<ItemStack, Integer> entry, boolean contentLocked) {
+        Location accessor, Map.Entry<ItemStack, Integer> entry, boolean contentLocked) {
         ItemStack item = StackUtils.getAsQuantity(entry.getKey(), entry.getValue());
         depositItemStack0(accessor, item, contentLocked);
         int leftover = item.getAmount();
@@ -392,21 +399,21 @@ public class StorageUnitData {
     }
 
     public synchronized void depositItemStack0(
-        @NotNull Location accessor, @NotNull Map<ItemStack, Integer> itemsToDeposit, boolean contentLocked) {
+        Location accessor, Map<ItemStack, Integer> itemsToDeposit, boolean contentLocked) {
         for (Map.Entry<ItemStack, Integer> entry : itemsToDeposit.entrySet()) {
             depositItemStack0(accessor, entry, contentLocked);
         }
     }
 
     public void depositItemStack0(
-        @NotNull Location accessor, @NotNull ItemStack @NotNull [] itemsToDeposit, boolean contentLocked) {
+        Location accessor, ItemStack [] itemsToDeposit, boolean contentLocked) {
         for (ItemStack item : itemsToDeposit) {
             depositItemStack0(accessor, item, contentLocked);
         }
     }
 
     public synchronized void depositItemStack0(
-        @NotNull Location accessor, @Nullable ItemStack itemsToDeposit, boolean contentLocked, boolean force) {
+        @Nullable Location accessor, @Nullable ItemStack itemsToDeposit, boolean contentLocked, boolean force) {
         if (itemsToDeposit == null || isBlacklisted(itemsToDeposit)) {
             return;
         }
@@ -416,7 +423,7 @@ public class StorageUnitData {
         }
     }
 
-    public void depositItemStack0(@NotNull Location accessor, ItemStack item, boolean contentLocked) {
+    public void depositItemStack0(@Nullable Location accessor, ItemStack item, boolean contentLocked) {
         depositItemStack0(accessor, item, contentLocked, false);
     }
 
@@ -429,7 +436,7 @@ public class StorageUnitData {
      * @return the amount actual added
      */
     public synchronized int addStoredItem0(
-        Location accessor, @NotNull ItemStack item, int amount, boolean contentLocked, boolean force) {
+        @Nullable Location accessor, ItemStack item, int amount, boolean contentLocked, boolean force) {
         int add = 0;
         boolean isVoidExcess = NetworksDrawer.isVoidExcess(getLastLocation());
         List<ItemContainer> stored = getStoredItems();
@@ -540,15 +547,15 @@ public class StorageUnitData {
      * @param item:     item will be added
      * @return the amount actual added
      */
-    public int addStoredItem0(Location accessor, @NotNull ItemStack item, boolean contentLocked) {
+    public int addStoredItem0(Location accessor, ItemStack item, boolean contentLocked) {
         return addStoredItem0(accessor, item, item.getAmount(), contentLocked, false);
     }
 
-    public int addStoredItem0(Location accessor, @NotNull ItemStack item, boolean contentLocked, boolean force) {
+    public int addStoredItem0(Location accessor, ItemStack item, boolean contentLocked, boolean force) {
         return addStoredItem0(accessor, item, item.getAmount(), contentLocked, force);
     }
 
-    public int addStoredItem0(Location accessor, @NotNull ItemStack item, int amount, boolean contentLocked) {
+    public int addStoredItem0(Location accessor, ItemStack item, int amount, boolean contentLocked) {
         return addStoredItem0(accessor, item, amount, contentLocked, false);
     }
 }

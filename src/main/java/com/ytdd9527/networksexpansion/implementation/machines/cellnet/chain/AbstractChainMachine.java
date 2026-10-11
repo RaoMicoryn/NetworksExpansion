@@ -605,7 +605,7 @@ public abstract class AbstractChainMachine extends NetworkObject {
             holderLists.add(metaHolders.get(g));
             holderTypes.add(metaReps.get(g).getType());
         }
-        root.addItemStacks0(accessor, requests);
+        root.addItemStacks(accessor, requests);
 
         long acceptedTotal = 0L;
         for (int i = 0; i < requests.size(); i++) {
