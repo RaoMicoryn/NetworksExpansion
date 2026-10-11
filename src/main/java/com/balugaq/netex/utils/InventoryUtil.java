@@ -12,8 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-import java.util.HashMap;
-
 @NullMarked
 @SuppressWarnings("DuplicatedCode")
 @UtilityClass

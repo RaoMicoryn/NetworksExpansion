@@ -1,9 +1,10 @@
 package com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.menu;
 
 import com.balugaq.netex.utils.Lang;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.ledger.CellPersistence;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.StorageCell;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.menu.CellLore;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.ledger.CellPersistence;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellMenuCommon;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -21,9 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.cell.Cell;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellMenuCommon;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class CellMenuListener implements Listener {
 
     @EventHandler

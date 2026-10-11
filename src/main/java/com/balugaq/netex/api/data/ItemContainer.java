@@ -3,7 +3,6 @@ package com.balugaq.netex.api.data;
 import io.github.sefiraat.networks.network.stackcaches.ItemStackCache;
 import io.github.sefiraat.networks.utils.StackUtils;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

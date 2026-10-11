@@ -3,8 +3,9 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.t
 import com.balugaq.netex.utils.Debug;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.connection.ConnectionManager;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.schema.DDLProvider;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.util.SerializeUtils;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.util.CRC32Utils;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.util.SerializeUtils;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ import java.sql.Statement;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class ItemTemplateRegistry {
 
     private static final Logger LOGGER = Networks.getInstance().getLogger();

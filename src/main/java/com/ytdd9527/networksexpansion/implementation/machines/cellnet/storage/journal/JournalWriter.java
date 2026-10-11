@@ -3,6 +3,7 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.j
 import com.balugaq.netex.utils.Debug;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.connection.ConnectionManager;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.write.WriteStrategy;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 
 import java.sql.Connection;
@@ -12,7 +13,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class JournalWriter {
 
     private static final Logger LOGGER = Networks.getInstance().getLogger();

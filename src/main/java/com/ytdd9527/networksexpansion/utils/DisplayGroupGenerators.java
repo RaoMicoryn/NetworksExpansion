@@ -3,7 +3,6 @@ package com.ytdd9527.networksexpansion.utils;
 import com.balugaq.netex.api.enums.Skins;
 import com.balugaq.netex.api.enums.StorageUnitType;
 import com.balugaq.netex.api.enums.Transformations;
-import com.ytdd9527.networksexpansion.implementation.ExpansionItemStacks;
 import com.ytdd9527.networksexpansion.utils.itemstacks.ItemStackUtil;
 import dev.sefiraat.sefilib.entity.display.DisplayGroup;
 import dev.sefiraat.sefilib.entity.display.builders.ItemDisplayBuilder;

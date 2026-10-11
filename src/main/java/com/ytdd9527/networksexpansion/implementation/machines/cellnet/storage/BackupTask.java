@@ -2,8 +2,8 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage;
 
 import com.balugaq.netex.utils.Debug;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.connection.ConnectionManager;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -15,7 +15,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.logging.Logger;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class BackupTask implements Runnable {
 
     private static final Logger LOGGER = Networks.getInstance().getLogger();

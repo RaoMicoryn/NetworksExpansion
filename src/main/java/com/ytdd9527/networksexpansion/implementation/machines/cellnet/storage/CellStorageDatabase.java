@@ -10,6 +10,7 @@ import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.sc
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.template.ItemKeyTplIdBridge;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.template.ItemTemplateRegistry;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.write.WriteStrategy;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 
 import java.util.concurrent.Executors;
@@ -17,7 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class CellStorageDatabase {
 
     private static final Logger LOGGER = Networks.getInstance().getLogger();

@@ -2,8 +2,9 @@ package com.ytdd9527.networksexpansion.implementation.machines.cellnet.assembly;
 
 import com.balugaq.netex.utils.Lang;
 import com.ytdd9527.networksexpansion.core.items.SpecialSlimefunItem;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.util.SerializeUtils;
 import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.util.CRC32Utils;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.storage.util.SerializeUtils;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import com.ytdd9527.networksexpansion.utils.itemstacks.ItemStackUtil;
 import io.github.sefiraat.networks.Networks;
 import io.github.sefiraat.networks.utils.Keys;
@@ -26,7 +27,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class AssemblyCard extends SpecialSlimefunItem implements NotPlaceable {
 
     public static final NamespacedKey ASSEMBLY_CARD_GRID =

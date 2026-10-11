@@ -1,6 +1,7 @@
 package com.ytdd9527.networksexpansion.implementation.machines.cellnet.drive.menu;
 
 import com.balugaq.netex.utils.Lang;
+import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
 import io.github.sefiraat.networks.Networks;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -14,7 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
-import com.ytdd9527.networksexpansion.implementation.machines.cellnet.ui.CellnetText;
+
 public class DriveWhitelistListener implements Listener {
 
     @EventHandler
