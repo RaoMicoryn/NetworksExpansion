@@ -36,7 +36,7 @@ public class InventoryUtil {
 
             int remaining = toAdd.getAmount();
 
-            // 1. 先尝试放入已有的相同物品堆
+            // 1. First, try to add items to matching stacks that already exist
             while (remaining > 0) {
                 int index = firstSimilar(storage, toAdd);
                 if (index == -1) {
@@ -47,7 +47,7 @@ public class InventoryUtil {
                 // assert exist != null;
                 int canAdd = Math.min(exist.getMaxStackSize() - exist.getAmount(), remaining);
                 if (canAdd <= 0) {
-                    // 理论上 firstSimilar 不会返回已满的，但以防万一
+                    // firstSimilar should not return a full stack, but just in case
                     break;
                 }
 
@@ -55,11 +55,11 @@ public class InventoryUtil {
                 remaining -= canAdd;
             }
 
-            // 2. 剩余部分放入空槽位
+            // 2. Put the remaining items into empty slots
             while (remaining > 0) {
                 int index = firstEmpty(storage);
                 if (index == -1) {
-                    // 背包满了
+                    // The inventory is full
                     break;
                 }
 
@@ -68,7 +68,7 @@ public class InventoryUtil {
                 remaining -= putAmount;
             }
 
-            // 如果物品用完，更新原对象的数量为 0，保持与原逻辑一致
+            // If all items were used, set the original item's amount to 0 to keep the old behavior
             toAdd.setAmount(remaining);
         }
 

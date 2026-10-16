@@ -412,9 +412,17 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
         if (blockMenu == null) {
             return;
         }
-        final StorageUnitData data = storages.get(l);
         for (int s : DISPLAY_SLOTS) {
             blockMenu.addMenuClickHandler(s, (player, slot, clickItem, action) -> {
+                // Look the data up at click time. When this handler is registered the data may not be
+                // loaded yet (async request), or it may have been removed since. Capturing it earlier
+                // left a null reference behind and caused a NullPointerException on every click.
+                final StorageUnitData data = storages.get(l);
+                if (data == null) {
+                    requestData(l, getContainerId(l));
+                    return false;
+                }
+
                 final ItemStack itemOnCursor = player.getItemOnCursor();
                 if (itemOnCursor != null && itemOnCursor.getType() != Material.AIR && StackUtils.isBlacklisted(itemOnCursor)) {
                     return false;
@@ -431,7 +439,7 @@ public class NetworksDrawer extends SpecialSlimefunItem implements DistinctiveIt
                         display.add(i);
                     }
                     int index = display.indexOf(slot);
-                    final var stored = storages.get(l).getStoredItems();
+                    final var stored = data.getStoredItems();
                     if (stored.size() <= index) {
                         return false;
                     }

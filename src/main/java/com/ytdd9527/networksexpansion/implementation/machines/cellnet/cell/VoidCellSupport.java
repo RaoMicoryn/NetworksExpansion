@@ -138,7 +138,7 @@ public final class VoidCellSupport {
             }
             ItemStack decoded = SerializeUtils.string2Object(part);
             if (decoded == null) {
-                Debug.debug("虚空元件过滤器单个条目反序列化失败，跳过该条目");
+                Debug.debug("Failed to load one Void Cell filter entry; skipping it");
                 continue;
             }
             decoded.setAmount(1);
@@ -171,7 +171,7 @@ public final class VoidCellSupport {
         if (depth > 0) {
             SUSPEND_DEPTH.set(depth - 1);
         } else {
-            Debug.debug("VoidCellSupport.resume 无匹配的 suspend 调用");
+            Debug.debug("VoidCellSupport.resume called without a matching suspend call");
         }
     }
 

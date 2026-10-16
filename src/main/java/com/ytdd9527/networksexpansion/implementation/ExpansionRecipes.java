@@ -1014,21 +1014,21 @@ public class ExpansionRecipes {
         OPTIC_GLASS.getItem(), ExpansionItemStacks.CELL_CLEANER, OPTIC_GLASS.getItem(),
         NETWORK_BRIDGE.getItem(), NETWORK_QUANTUM_STORAGE_0.getItem(), NETWORK_BRIDGE.getItem(),
         OPTIC_GLASS.getItem(), OPTIC_GLASS.getItem(), OPTIC_GLASS.getItem()
-    };  // 元件转量子储存：工作台换个芯，中间放个量子储存当核心
+    };  // Convert a component to Quantum Storage: swap the core in the crafting table and put Quantum Storage in the center
 
-    // ---- 元件网络三件套（装配驱动器 / 虚空元件 / 末影驱动器） ----
+    // ---- Component network trio (Assembly Drive / Void Cell / Ender Drive) ----
 
     public static final ItemStack ENDER_PEARL = new ItemStack(org.bukkit.Material.ENDER_PEARL);
     public static final ItemStack WITHER_ROSE = new ItemStack(org.bukkit.Material.WITHER_ROSE);
 
-    /** 装配驱动器 = 蓝图 + 元件驱动器 + 桥梁。 */
+    /** Assembly Drive = Blueprint + Component Drive + Bridge. */
     public static final ItemStack[] ASSEMBLY_DRIVE = new ItemStack[]{
         OPTIC_CABLE.getItem(), ExpansionItemStacks.NETWORK_BRIDGE_ORDINAL, OPTIC_CABLE.getItem(),
         OPTIC_GLASS.getItem(), ExpansionItemStacks.CELL_DRIVE, OPTIC_GLASS.getItem(),
         OPTIC_CABLE.getItem(), ExpansionItemStacks.NETWORK_BRIDGE_ORDINAL, OPTIC_CABLE.getItem()
     };
 
-    /** 虚空元件 = 枯萎玫瑰 + 基础存储元件。 */
+    /** Void Cell = Wither Rose + Basic Storage Component. */
     public static final ItemStack[] VOID_CELL = new ItemStack[]{
         null, WITHER_ROSE, null,
         WITHER_ROSE, CellTier.T1.stack(), WITHER_ROSE,
@@ -1041,7 +1041,7 @@ public class ExpansionRecipes {
         OPTIC_GLASS.getItem(), ENDER_PEARL, OPTIC_GLASS.getItem()
     };
 
-    /** 装配卡 = 纸 + 墨囊 + 末影珍珠。 */
+    /** Assembly Card = Paper + Ink Sac + Ender Pearl. */
     public static final ItemStack PAPER_STACK = new ItemStack(org.bukkit.Material.PAPER);
     public static final ItemStack INK_SAC = new ItemStack(org.bukkit.Material.INK_SAC);
 
@@ -1051,49 +1051,49 @@ public class ExpansionRecipes {
         PAPER_STACK, PAPER_STACK, PAPER_STACK
     };
 
-    /** 装配工坊 = 装配卡 ×4 + 网络编码器。 */
+    /** Assembly Workshop = 4 Assembly Cards + Network Encoder. */
     public static final ItemStack[] ASSEMBLY_WORKSHOP = new ItemStack[]{
         null, ExpansionItemStacks.ASSEMBLY_CARD, null,
         ExpansionItemStacks.ASSEMBLY_CARD, NETWORK_RECIPE_ENCODER.getItem(), ExpansionItemStacks.ASSEMBLY_CARD,
         null, ExpansionItemStacks.ASSEMBLY_CARD, null
     };
 
-    /** 自动灌装机 = 装配卡 ×4 + 重生锚。 */
+    /** Auto Filler = 4 Assembly Cards + Respawn Anchor. */
     public static final ItemStack[] CONTAINER_FILLER = new ItemStack[]{
         null, ExpansionItemStacks.ASSEMBLY_CARD, null,
         ExpansionItemStacks.ASSEMBLY_CARD, new ItemStack(Material.RESPAWN_ANCHOR), ExpansionItemStacks.ASSEMBLY_CARD,
         null, ExpansionItemStacks.ASSEMBLY_CARD, null
     };
 
-    /** 频道配置器 = 末影珍珠 + 纸。 */
+    /** Channel Configurator = Ender Pearl + Paper. */
     public static final ItemStack[] CHANNEL_CONFIGURATOR = new ItemStack[]{
         null, null, null,
         null, PAPER_STACK, null,
         null, ENDER_PEARL, null
     };
 
-    /** 装配超频核心 = 红石 + 金锭 + 末影珍珠。 */
+    /** Assembly Overclock Core = Redstone + Gold Ingot + Ender Pearl. */
     public static final ItemStack[] OVERCLOCK_CORE = new ItemStack[]{
         null, new ItemStack(org.bukkit.Material.REDSTONE), null,
         new ItemStack(org.bukkit.Material.REDSTONE), new ItemStack(org.bukkit.Material.GOLD_INGOT), new ItemStack(org.bukkit.Material.REDSTONE),
         null, ENDER_PEARL, null
     };
 
-    /** 装配智能核心 = 回响碎片 + 金锭 + 末影珍珠。 */
+    /** Assembly Smart Core = Echo Shard + Gold Ingot + Ender Pearl. */
     public static final ItemStack[] SMART_CORE = new ItemStack[]{
         null, new ItemStack(org.bukkit.Material.ECHO_SHARD), null,
         new ItemStack(org.bukkit.Material.ECHO_SHARD), new ItemStack(org.bukkit.Material.GOLD_INGOT), new ItemStack(org.bukkit.Material.ECHO_SHARD),
         null, ENDER_PEARL, null
     };
 
-    /** 装配监控器 = 铁框 + 望远镜 + 红石。 */
+    /** Assembly Monitor = Iron Frame + Spyglass + Redstone. */
     public static final ItemStack[] ASSEMBLY_MONITOR = new ItemStack[]{
         new ItemStack(org.bukkit.Material.IRON_INGOT), new ItemStack(org.bukkit.Material.SPYGLASS), new ItemStack(org.bukkit.Material.IRON_INGOT),
         new ItemStack(org.bukkit.Material.IRON_INGOT), new ItemStack(org.bukkit.Material.REDSTONE), new ItemStack(org.bukkit.Material.IRON_INGOT),
         new ItemStack(org.bukkit.Material.IRON_INGOT), new ItemStack(org.bukkit.Material.IRON_INGOT), new ItemStack(org.bukkit.Material.IRON_INGOT)
     };
 
-    /** 元件驱动器管理器 = 铁框 + 末影之眼 + 红石。 */
+    /** Component Drive Manager = Iron Frame + Eye of Ender + Redstone. */
     public static final ItemStack[] DRIVE_MONITOR = new ItemStack[]{
         new ItemStack(org.bukkit.Material.IRON_INGOT), new ItemStack(org.bukkit.Material.ENDER_EYE), new ItemStack(org.bukkit.Material.IRON_INGOT),
         new ItemStack(org.bukkit.Material.IRON_INGOT), new ItemStack(org.bukkit.Material.REDSTONE), new ItemStack(org.bukkit.Material.IRON_INGOT),

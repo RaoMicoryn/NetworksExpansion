@@ -19,10 +19,10 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * TsingshanTechnology（青山科技）存储单元的网络桶适配。
- * 存储结构与应用尽存储（InfinityExpansion StorageUnit）几乎一致：
- * 输入槽 10、展示槽 13、输出槽 16；数量落盘键为 "sstored"，
- * 展示物品带 tsingshantechnology-fixed:display PDC 标记。
+ * Network barrel adapter for the TsingshanTechnology (Qingshan Technology) storage unit.
+ * Its storage layout is almost the same as the InfinityExpansion StorageUnit:
+ * input slot 10, display slot 13, output slot 16; the amount is saved under the "sstored" key,
+ * and the displayed item has the tsingshantechnology-fixed:display PDC tag.
  */
 public class TsingshanBarrel extends BarrelIdentity {
 

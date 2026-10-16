@@ -21,12 +21,18 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * 元件网络的虚拟量子缓存：注入 {@link NetworkQuantumStorage#getCaches()} 后，
- * LogiTech2 的量子代理适配器会把它当作一台量子储存读写——
- * 数量读写实时转发到驱动器元件账本（O(1) 键控 + long 算术），零物品搬运。
- * LogiTech2 反射按运行时类解析并全局缓存 Method：首次注入前先用真 QuantumCache
- * 假体预热解析器，把缓存钉到 QuantumCache 声明的方法上，避免与真量子储存混用时
- * 解析落错类导致适配器累计报错自动注销。
+ * Virtual quantum cache for cell networks: after being added to
+ * {@link NetworkQuantumStorage#getCaches()}, the LogiTech2 quantum proxy adapter
+ * treats it like a quantum storage and reads/writes to it.
+ * Amount changes are forwarded directly to the drive's cell records in real time
+ * (O(1) key lookup + long arithmetic), without moving any items.
+ *
+ * LogiTech2 uses reflection to resolve methods from the runtime class and caches
+ * them globally. Before injecting this cache for the first time, use a real
+ * QuantumCache as a dummy to warm up the resolver. This makes the resolver stick
+ * to the methods declared by QuantumCache and prevents it from resolving the
+ * wrong class when used alongside real quantum storage, which could cause the
+ * adapter to keep logging errors until it automatically unregisters itself.
  */
 public class CellVirtualCache extends QuantumCache {
 
@@ -209,7 +215,7 @@ public class CellVirtualCache extends QuantumCache {
                 caches.remove(dummy);
             }
         } catch (Throwable e) {
-            com.balugaq.netex.utils.Debug.trace(e, "预热 LogiTech2 量子代理反射解析");
+            com.balugaq.netex.utils.Debug.trace(e, "Prewarming LogiTech2 quantum proxy reflection lookup");
         }
     }
 

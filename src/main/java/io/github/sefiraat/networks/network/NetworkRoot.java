@@ -131,12 +131,12 @@ public class NetworkRoot extends NetworkNode {
     private final DriveCache driveCache = new DriveCache();
 
     /**
-     * 聚合物品快照按网络（控制器位置）静态共享：root 实例每刻由 NetworkController 重建，
-     * 实例级缓存无法跨刻复用，空闲网络（无写入）借此零重扫。失效条件：
-     * 同刻——仅显式失效（{@link #markDirty()}）重建，
-     * 刻内普通写沿用既有"至多 1 刻延迟"契约（写纪元不影响同刻复用）；
-     * 跨刻——期间无任何写（写纪元不变）且未超 {@link #SNAPSHOT_MAX_AGE_MS} 才复用。
-     * 时间上限兜底绕过 root 的直改存储（抽屉/单元 GUI 手改、区块加载、结构变更）——陈旧度至多 500ms。
+     * The aggregated item snapshot is shared statically per network (controller location): each root instance is rebuilt every tick by NetworkController,
+     * so instance-level caches cannot be reused across ticks. Idle networks (with no writes) can skip rescanning this way. Cache invalidation rules:
+     * Within the same tick, rebuild only after explicit invalidation ({@link #markDirty()}),
+     * while normal writes keep the existing "up to 1 tick of delay" rule (the write epoch does not affect reuse within the same tick);
+     * Across ticks, reuse only if there were no writes in between (the write epoch is unchanged) and {@link #SNAPSHOT_MAX_AGE_MS} has not been exceeded.
+     * The time limit is a fallback for storage changes made outside the root (manual drawer/cell GUI edits, chunk loading, structure changes), keeping stale data at most 500ms old.
      */
     private static final Map<Location, ItemSnapshot> SHARED_ITEM_SNAPSHOTS = new ConcurrentHashMap<>();
     private static final Map<Location, AtomicLong> INVALIDATION_EPOCHS = new ConcurrentHashMap<>();
@@ -145,10 +145,10 @@ public class NetworkRoot extends NetworkNode {
     private static final long SNAPSHOT_IDLE_MS = 3_600_000L;
 
     /**
-     * 不可变快照：内容与失效判定依据作为整体经 CHM 原子发布（单引用读），
-     * 拆成多个字段会让读线程看到"新纪元 + 旧数据"的组合。
-     * keyed 为内部聚合的原始视图（发布后不再变更），供 keyed 消费方零哈希查询；
-     * items 为 keyed 的 ItemStack 出口视图，仅首个消费方需要时构建并缓存（keyed-only 消费零克隆）。
+     * Immutable snapshot: the contents and invalidation checks are published together atomically through CHM (read through a single reference),
+     * because splitting them into multiple fields could let reader threads see a mix of "new epoch + old data".
+     * keyed is the raw internal aggregated view (unchanged after publication), allowing keyed consumers to query without hashing;
+     * items is the ItemStack view exported from keyed, built and cached only when the first consumer needs it (keyed-only consumers do not clone).
      */
     @RequiredArgsConstructor
     private static final class ItemSnapshot {
@@ -352,7 +352,7 @@ public class NetworkRoot extends NetworkNode {
         BlockMenu blockMenu, io.gitee.crankygoudan.tsingshantechnology.items.chucun.StorageUnit storageUnit,
         boolean includeEmpty) {
         final ItemStack itemStack = blockMenu.getItemInSlot(16);
-        // TsingshanTechnology 的数量落盘键为 "sstored"（区别于无尽存储的 "stored"）
+        // TsingshanTechnology saves the stored amount under the "sstored" key (unlike Infinity storage, which uses "stored")
         final String storedString = StorageCacheUtils.getData(blockMenu.getLocation(), "sstored");
         if (storedString == null) return null;
 
@@ -517,12 +517,12 @@ public class NetworkRoot extends NetworkNode {
         return indexes.get(type).locations.size();
     }
 
-    /** 显式失效纪元：markDirty 递增，同刻与跨刻复用都会校验。 */
+    /** Explicit invalidation epoch: markDirty increments it, and reuse within or across ticks checks it. */
     private void bumpInvalidationEpoch() {
         INVALIDATION_EPOCHS.computeIfAbsent(this.nodePosition, k -> new AtomicLong()).incrementAndGet();
     }
 
-    /** 写纪元：物品存取（addItemStack0 / getItemStack0）递增，仅影响跨刻复用。 */
+    /** Write epoch: incremented when items are added or taken (addItemStack0 / getItemStack0); only affects reuse across ticks. */
     private void bumpWriteEpoch() {
         WRITE_EPOCHS.computeIfAbsent(this.nodePosition, k -> new AtomicLong()).incrementAndGet();
     }
@@ -538,8 +538,8 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * 外部代码绕过 {@link #addItemStack(Location, ItemStack)} / {@link #getItemStack(Location, ItemRequest)}
-     * 直接改动网络存储内容（如机器菜单槽位、元件驱动器内部缓存）后，必须调用本方法使聚合物品缓存失效。
+     * If external code bypasses {@link #addItemStack(Location, ItemStack)} / {@link #getItemStack(Location, ItemRequest)}
+     * and directly changes network storage (such as machine menu slots or the cell drive internal cache), this method must be called to invalidate the aggregated item cache.
      */
     public void markDirty() {
         bumpInvalidationEpoch();
@@ -565,23 +565,23 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * 返回网络全量物品的聚合快照。快照按网络静态共享：
-     * 同刻内——仅显式失效（{@link {@link #markDirty()}）重建，
-     * 普通物品写沿用既有"至多 1 刻延迟"契约；
-     * 跨刻——期间无任何写（写纪元不变）且距发布不超过 500ms 时直接复用（空闲网络零重扫），
-     * 否则重建。绕过 root 的直改存储（GUI 手改、区块加载、结构变更）由时间上限兜底。
+     * Returns an aggregated snapshot of all items in the network. The snapshot is shared statically per network:
+     * Within the same tick, rebuild only after explicit invalidation ({@link {@link #markDirty()}),
+     * while normal item writes keep the existing "up to 1 tick of delay" rule;
+     * across ticks, reuse directly if there were no writes in between (the write epoch is unchanged) and no more than 500ms have passed since publication (no rescanning for idle networks),
+     * otherwise rebuild. The time limit covers storage changes made outside the root (manual GUI edits, chunk loading, structure changes).
      * <p>
-     * 注意：返回的是<b>共享缓存实例</b>，调用方不得修改（含 entrySet/keySet 视图）；
-     * 需要独立副本请自行 clone。
+     * Note: this returns a <b>shared cache instance</b>; callers must not modify it (including its entrySet/keySet views);
+     * clone it yourself if you need a separate copy.
      */
     public Map<ItemStack, Long> getAllNetworkItemsLongType() {
         return obtainItemSnapshot().items();
     }
 
     /**
-     * 聚合物品的 keyed 只读视图（{@link ItemKey} 精确身份，amount 归一为 1 的模板）：
-     * 与 {@link #getAllNetworkItemsLongType()} 同一份快照、同一套失效校验，
-     * 键的哈希在聚合时已算好——查询零重复深度哈希。返回共享实例，不得修改。
+     * Read-only keyed view of aggregated items (exact identity via {@link ItemKey}, with amount normalized to 1):
+     * uses the same snapshot and invalidation checks as {@link #getAllNetworkItemsLongType()},
+     * and keys are already hashed during aggregation, so queries do not repeat deep hashing. The returned instance is shared and must not be modified.
      */
     public Map<ItemKey, Long> getAllNetworkItemsKeyedView() {
         return obtainItemSnapshot().keyed();
@@ -589,7 +589,7 @@ public class NetworkRoot extends NetworkNode {
 
     private ItemSnapshot obtainItemSnapshot() {
         final Location networkId = this.nodePosition;
-        // 读取顺序：先快照、后纪元——若两步之间发生失效递增，会判定不命中而重扫（fail-safe）
+        // Read order: snapshot first, then epoch. If invalidation increments between these steps, it will be treated as a cache miss and rescanned (fail-safe).
         final ItemSnapshot snapshot = SHARED_ITEM_SNAPSHOTS.get(networkId);
         final long invalidationEpoch = currentInvalidationEpoch(networkId);
         final long writeEpoch = currentWriteEpoch(networkId);
@@ -660,7 +660,7 @@ public class NetworkRoot extends NetworkNode {
             }
         }
 
-        // Cell Drives：直取 keyed 视图，零身份构造合并
+        // Cell Drives: read the keyed view directly and merge without rebuilding item identities
         ItemHashMap<Long> cellItems = CellDrive.getStorage().getAllCellItemsKeyed(driveCache, getOutputAbleCellDriveMenus());
         for (Map.Entry<ItemKey, Long> entry : cellItems.keyEntrySet()) {
             ItemKey key = entry.getKey();
@@ -668,8 +668,8 @@ public class NetworkRoot extends NetworkNode {
             itemStacks.putKey(key, (current == null ? 0L : current) + entry.getValue());
         }
 
-        // 发布快照：用读取开始前捕获的纪元打戳——扫描中途发生的失效递增会让本快照立即过期重扫；
-        // ItemStack 出口视图惰性构建（见 ItemSnapshot.items）
+        // Publish the snapshot using the epoch captured before reading; invalidation during the scan makes this snapshot expire immediately and triggers a rescan;
+        // The exported ItemStack view is built lazily (see ItemSnapshot.items).
         ItemSnapshot published = new ItemSnapshot(
             itemStacks.keyedView(), invalidationEpoch, writeEpoch, currentTick, System.currentTimeMillis());
         SHARED_ITEM_SNAPSHOTS.put(networkId, published);
@@ -677,7 +677,7 @@ public class NetworkRoot extends NetworkNode {
         return published;
     }
 
-    /** 内部聚合：以精确身份（保留全部 meta，仅数量归一）为键累计数量，每条目一次深度哈希。 */
+    /** Internal aggregation: sum amounts by exact identity (keep all metadata, normalize only the amount), with one deep hash per entry. */
     private static void addKeyedAmount(ItemHashMap<Long> all, @Nullable ItemStack key, long amount) {
         if (key == null || key.getType() == Material.AIR) return;
         ItemKey itemKey = ItemKey.exact(key);
@@ -690,7 +690,7 @@ public class NetworkRoot extends NetworkNode {
         addKeyedAmount(all, key, item.getAmount());
     }
 
-    /** 清理长期无发布的网络快照与纪元条目，防止网络拆除后残留。 */
+    /** Remove old network snapshots and epoch entries that have not been published for a long time, so removed networks leave no leftovers. */
     private static void evictStaleSnapshotNetworks() {
         if (SHARED_ITEM_SNAPSHOTS.size() <= 1) {
             return;
@@ -1310,10 +1310,10 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * @param accessor 取物的机器位置
-     * @param request  请求（会被消费，{@code receiveAmount} 递减剩余需求）
-     * @param option   物品匹配选项（忽略项），为 null 时使用 {@link MatchOption#DEFAULT}
-     * @return 匹配 {@code option} 的物品；数量为 0 时返回 null
+     * @param accessor location of the machine requesting items
+     * @param request request (consumed during the call; {@code receiveAmount} reduces the remaining amount needed)
+     * @param option item matching options (items to ignore); uses {@link MatchOption#DEFAULT} when null
+     * @return item matching {@code option}, or null if the amount is 0
      */
     public @Nullable ItemStack getItemStack(
         @Nullable Location accessor, ItemRequest request, @Nullable MatchOption option) {
@@ -1364,9 +1364,9 @@ public class NetworkRoot extends NetworkNode {
                             continue;
                         }
 
-                        // 复验实际取到的物品：匹配用的是扫描快照，requestItem 读的是活状态，
-                        // 两者之间存储内容可能已被更换（如清空后改存其他物品）。
-                        // 只读型桶（Infinity/Tsingshan）尚未扣量，跳过即无损。
+                        // Check the item actually retrieved again: matching used the scan snapshot, while requestItem reads the live state,
+                        // so the stored item may have changed in between (for example, storage was cleared and filled with something else).
+                        // Read-only barrels (Infinity/Tsingshan) have not had their amounts reduced yet, so skipping them loses nothing.
                         if (!StackUtils.itemsMatch(request, fetched, option)) {
                             continue;
                         }
@@ -1464,9 +1464,9 @@ public class NetworkRoot extends NetworkNode {
                     continue;
                 }
 
-                // 复验实际取到的物品：匹配用的是扫描快照，requestItem 读的是活状态，
-                // 两者之间存储内容可能已被更换（如清空后改存其他物品）。
-                // 只读型桶（Infinity/Tsingshan）尚未扣量，跳过即无损。
+                // Check the item actually retrieved again: matching used the scan snapshot, while requestItem reads the live state,
+                // so the stored item may have changed in between (for example, storage was cleared and filled with something else).
+                // Read-only barrels (Infinity/Tsingshan) have not had their amounts reduced yet, so skipping them loses nothing.
                 if (!StackUtils.itemsMatch(request, fetched, option)) {
                     continue;
                 }
@@ -1704,15 +1704,15 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * 批量取料：一次网络走查服务多个请求，走查家族顺序与 {@link #getItemStack(Location, ItemRequest)} 完全一致
-     * （访问历史优先 → 桶 → 抽屉 → 元件驱动器 → 细胞 → 合成器 → 高级贪心 → 贪心），
-     * 唯一区别是每到访一个存储节点会尝试满足所有未完成请求，全部满足后立即结束走查。
+     * Batch item retrieval: scan the network once to serve multiple requests, using exactly the same storage order as {@link #getItemStack(Location, ItemRequest)}
+     * (access history first → barrels → drawers → cell drives → cells → crafters → advanced greedy blocks → greedy blocks),
+     * The only difference is that each storage node visited tries to satisfy all unfinished requests, and the scan ends as soon as all are satisfied.
      * <p>
-     * 契约：消费各请求（{@link ItemRequest#receiveAmount(int)} 递减至 0）；返回列表与入参按位对齐，
-     * 未取到任何物品的请求对应位为 null；相同身份的重复请求不去重、按序逐条尝试；
-     * 访问历史命中/衰减与 transport-miss 簿记按请求各自对齐。
-     * 与逐请求调用 getItemStack0 的行为差异：各请求在存储节点间的消耗顺序不同（各请求取到总量不变）、
-     * recordFlow 记录顺序不同、access-limit 反馈整批至多一条。
+     * Rules: each request is consumed ({@link ItemRequest#receiveAmount(int)} reduces it to 0); the returned list matches the input positions,
+     * the slot for a request that retrieves nothing is null; duplicate requests with the same identity are not deduplicated and are tried in order;
+     * access-history hits/decay and transport-miss tracking are kept aligned with each request.
+     * Compared with calling getItemStack0 once per request: the order in which requests take items from storage nodes differs (but each request gets the same total amount),
+     * the recordFlow order differs, and access-limit feedback is sent at most once for the whole batch.
      */
     public List<@Nullable ItemStack> getItemStacksBatch(Location accessor, List<ItemRequest> requests) {
         if (!allowAccessOutput(accessor)) {
@@ -1770,8 +1770,8 @@ public class NetworkRoot extends NetworkNode {
                                 continue;
                             }
 
-                            // 复验实际取到的物品：匹配用扫描快照，requestItem 读活状态，
-                            // 两者之间存储内容可能已被更换；只读型桶尚未扣量，跳过即无损。
+                            // Check the item actually retrieved again: matching used the scan snapshot, while requestItem reads the live state,
+                            // so the stored item may have changed in between; read-only barrels have not had their amounts reduced, so skipping them loses nothing.
                             if (!StackUtils.itemsMatch(request, fetched)) {
                                 continue;
                             }
@@ -1882,8 +1882,8 @@ public class NetworkRoot extends NetworkNode {
                         continue;
                     }
 
-                    // 复验实际取到的物品：匹配用扫描快照，requestItem 读活状态，
-                    // 两者之间存储内容可能已被更换；只读型桶尚未扣量，跳过即无损。
+                    // Check the item actually retrieved again: matching used the scan snapshot, while requestItem reads the live state,
+                    // so the stored item may have changed in between; read-only barrels have not had their amounts reduced, so skipping them loses nothing.
                     if (!StackUtils.itemsMatch(request, fetched)) {
                         continue;
                     }
@@ -2163,7 +2163,7 @@ public class NetworkRoot extends NetworkNode {
         }
     }
 
-    /** getItemStacksBatch 的单请求运行态：入参索引对齐、聚合结果与访问历史段簿记。 */
+    /** Runtime state for one request in getItemStacksBatch: aligned with the input index, aggregated result, and access-history tracking. */
     private static final class BatchTake {
         private final ItemRequest request;
         private final int index;
@@ -2403,8 +2403,8 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * 批量入库：一批物品按原有优先级走一遍存储，每种仓库只访问一次。
-     * 未收完的物品保留剩余数量，由调用方回扣来源容器。
+     * Batch storage insertion: store a batch of items in one pass, following the original priority order and visiting each storage type only once.
+     * Any items not fully stored keep their remaining amount, which the caller subtracts from the source container.
      */
     public void addItemStacks(@Nullable Location accessor, List<ItemStack> incomings) {
         if (incomings.isEmpty()) return;
@@ -2519,7 +2519,7 @@ public class NetworkRoot extends NetworkNode {
     }
 
     /**
-     * 说实话这个治标不治本
+     * Honestly, this treats the symptoms but does not fix the root cause.
      */
     public static boolean isFakeCell(BlockMenu menu) {
         return !isRealCell(menu.getLocation());

@@ -361,7 +361,7 @@ final class AssemblyRound {
                 new ItemRequest(template.clone(), (int) Math.min(absorbed, Integer.MAX_VALUE)));
             long gotAmount = got == null || got.getType().isAir() ? 0L : got.getAmount();
             if (gotAmount < absorbed) {
-                Debug.debug("装配驱动器容量探针取回不足");
+                Debug.debug("Assembly drive capacity probe could not retrieve enough items");
             }
             return gotAmount;
         });

@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 量子纠缠的绑定目标。AUTO 沿 量子储存 → 元件 → 抽屉 依次回退；
- * 其余取值只扫描对应存储，目标里没有该物品时绑定失败。
+ * Target for a quantum link. AUTO checks quantum storage → cells → drawers in that order;
+ * other options only check the selected storage, and linking fails if the item is not found there.
  */
 public enum LinkerTarget {
     AUTO,

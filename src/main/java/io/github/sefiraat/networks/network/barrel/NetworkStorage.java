@@ -36,10 +36,10 @@ public class NetworkStorage extends BarrelIdentity {
             return null;
         }
 
-        // 快照一致性校验：getItemStack0/getItemStacksBatch0 用桶扫描时的快照物品匹配请求，
-        // 而本方法读取的是活缓存。若两次访问之间存储被取空并改存了其他物品
-        // （root 生命周期为一刻，同一刻内完全可能发生），直接扣量会取出错误物品。
-        // 校验失败直接放弃本次取物（此时尚未扣量，无损），由外层继续尝试其他桶。
+        // Check that the snapshot still matches: getItemStack0/getItemStacksBatch0 match requests using the item snapshot from the barrel scan,
+        // but this method reads the live cache. If the storage is emptied and then filled with a different item between the two accesses
+        // (the root only lives for one tick, so this can happen within the same tick), taking items right away could give the wrong item.
+        // If the check fails, skip this request (nothing has been taken yet, so nothing is lost) and let the outer code try another barrel.
         final ItemStack cacheItem = cache.getItemStack();
         if (cacheItem != null && !StackUtils.itemsMatch(itemRequest.getItemStack(), cacheItem)) {
             return null;

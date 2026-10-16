@@ -350,7 +350,7 @@ public class ItemMover extends SpecialSlimefunItem implements DistinctiveItem {
             return null;
         }
 
-        // TsingshanTechnology 的数量落盘键为 "sstored"（区别于无尽存储的 "stored"）
+        // TsingshanTechnology uses "sstored" to save the stored amount (unlike "stored" used by Infinity storage)
         final String storedString = data.getData("sstored");
         if (storedString == null || storedString.isEmpty()) {
             return null;

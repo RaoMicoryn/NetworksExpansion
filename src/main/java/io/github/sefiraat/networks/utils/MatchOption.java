@@ -13,33 +13,33 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 物品匹配选项（MatchOption）。
+ * Options for matching items (MatchOption).
  * <p>
- * 所有 {@code itemsMatch} 重载最终都会路由到
+ * All {@code itemsMatch} overloads eventually call
  * {@link StackUtils#itemsMatch(ItemStackCache, ItemStack, MatchOption)}，
- * 并由这里描述的「忽略项」决定是否比对某些物品属性。
+ * The "ignore" options described here decide which item properties are checked.
  * <p>
- * 「忽略项」使用 1 个 {@code long} 的位标记表示，未来新增忽略项时，只需追加一个位。
+ * Each "ignore" option is stored as a bit in one {@code long}. To add a new option later, just add another bit.
  * <p>
- * 默认值为 {@link #DEFAULT}：不忽略任何项，比较 lore / 数量以外的既有默认项。
+ * The default is {@link #DEFAULT}: it keeps the existing behavior, ignoring amount and custom model data but checking other properties.
  *
  * @see StackUtils#itemsMatch(ItemStackCache, ItemStack, MatchOption)
  * @author balugaq
  */
 @Data
 public class MatchOption {
-    // <editor-fold desc="忽略项位标记，新增忽略项时在此追加">
-    /** 忽略物品耐久（Damage） */
+    // <editor-fold desc="Ignore flags; add new flags here">
+    /** Ignore item damage. */
     public static final long IGNORE_DURABILITY = 1L;
-    /** 忽略物品附魔（Enchantment） */
+    /** Ignore item enchantments. */
     public static final long IGNORE_ENCHANTMENT = 1L << 1;
-    /** 忽略物品属性（Attribute） */
+    /** Ignore item attributes. */
     public static final long IGNORE_ATTRIBUTE = 1L << 2;
-    /** 忽略物品描述（Lore） */
+    /** Ignore item lore. */
     public static final long IGNORE_LORE = 1L << 3;
-    /** 忽略物品自定义模型（Custom Model Data） */
+    /** Ignore custom model data. */
     public static final long IGNORE_CUSTOM_MODEL_DATA = 1L << 4;
-    /** 忽略物品数量 */
+    /** Ignore item amount. */
     @ApiStatus.Internal
     public static final long IGNORE_AMOUNT = 1L << 5; // Does NOT open to players
     // </editor-fold>
@@ -47,10 +47,10 @@ public class MatchOption {
     private static final long IGNORE_MASK =
         IGNORE_DURABILITY | IGNORE_ENCHANTMENT | IGNORE_ATTRIBUTE | IGNORE_LORE | IGNORE_CUSTOM_MODEL_DATA | IGNORE_AMOUNT;
 
-    /** 不忽略任何项 */
+    /** Do not ignore anything. */
     public static final long NO_IGNORE = 0L;
 
-    /** 默认选项：与改动前 {@code itemsMatch(cache, item)} 的行为保持一致 */
+    /** Default option: keeps the same behavior as {@code itemsMatch(cache, item)} before the changes. */
     public static final MatchOption DEFAULT = new MatchOption(IGNORE_AMOUNT | IGNORE_CUSTOM_MODEL_DATA);
 
     private final long ignoreFlags;
@@ -92,12 +92,12 @@ public class MatchOption {
         return (ignoreFlags & IGNORE_CUSTOM_MODEL_DATA) != 0;
     }
 
-    /** 没有任何忽略项生效 */
+    /** No ignore options are enabled. */
     public boolean isEmpty() {
         return ignoreFlags == NO_IGNORE;
     }
 
-    /** 只要有一个「忽略」标记生效 */
+    /** At least one ignore option is enabled. */
     public boolean isAnyIgnore() {
         return ignoreFlags != NO_IGNORE;
     }

@@ -288,8 +288,8 @@ public class Keys {
     }
 
     /**
-     * TsingshanTechnology 存储单元展示物品的 PDC 键。
-     * 其插件名为 TsingshanTechnology-Fixed，故 namespace 为 tsingshantechnology-fixed。
+     * PDC key for the display item of the TsingshanTechnology storage unit.
+     * Its plugin is named TsingshanTechnology-Fixed, so its namespace is tsingshantechnology-fixed.
      */
     public static final NamespacedKey TSINGSHAN_DISPLAY =
         Keys.customNewKey("tsingshantechnology-fixed", "display");

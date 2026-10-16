@@ -38,7 +38,7 @@ public class ListenerManager {
         addListener(new DriveUniquenessListener());
         addListener(new DriveWhitelistListener());
         addListener(new CellnetExplosiveToolListener());
-        // 元件网络三件套（装配/虚空/末影）基础设施监听
+        // Infrastructure listeners for the component network trio (Assembly / Void / Ender)
         addListener(new ChatInputListener());
         addListener(new NetworkCacheInvalidationListener());
         addListener(new DriveCellOpenListener());

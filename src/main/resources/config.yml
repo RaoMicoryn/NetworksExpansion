@@ -1,5 +1,5 @@
 # Auto update from Guizhan Build is enabled by default.
-auto-update: true
+auto-update: false
 
 # Language
 language: zh-CN

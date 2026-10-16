@@ -60,11 +60,11 @@ public class StackUtils {
     public static final boolean IS_1_21_4 = MC_VERSION.isAtLeast(MinecraftVersion.V1_21_4);
 
     /**
-     * 把历史上 {@code itemsMatch} 的「check」参数翻译成 {@link MatchOption} 的「ignore」位。
+     * Convert the old {@code itemsMatch} "check" parameters into {@link MatchOption} "ignore" flags.
      * <p>
-     * check 与 ignore 互为反义：{@code checkLore = false}（不比较 lore）即 {@code ignoreLore = true}。
-     * 因此这里对 {@code false} 的调用方保持逐位等价，{@code true} 的调用方则额外打开强制比较 lore 的开关，
-     * 使 {@code shouldCompareLore} 的短路语义不丢失。
+     * "Check" and "ignore" mean the opposite: {@code checkLore = false} (do not compare lore) means {@code ignoreLore = true}.
+     * This keeps the flags equivalent for callers passing {@code false}. Callers passing {@code true} also enable the force-check-lore option,
+     * so the short-circuit behavior of {@code shouldCompareLore} stays the same.
      */
     private static MatchOption toOption(
         boolean checkLore, boolean checkAmount, boolean checkCustomModelId) {

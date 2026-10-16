@@ -13,14 +13,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 /**
- * 网络抽屉的虚拟量子缓存：注入 {@link NetworkQuantumStorage#getCaches()} 后，
- * LogiTech2 的量子代理适配器会把它当作一台量子储存读写——
- * 数量读写实时转发到抽屉 {@link ItemContainer}（volatile int + synchronized），零物品搬运。
- * 与元件网络同为实读实写模型：抽屉还会被网络路由等其它途径修改，
- * 只有实时读账本、写入按差额增减才不会吞掉这些变更。
- * 只持有抽屉坐标，{@link NetworksDrawer#getStorageData} 每次现取——
- * 区块未加载时读 0，加载后自愈，重启重放不依赖加载顺序。
- * 反射解析器由 {@link CellVirtualCache#preWarmResolvers()} 钉到 QuantumCache 上。
+ * Virtual quantum cache for network drawers: after being added to {@link NetworkQuantumStorage#getCaches()},
+ * the LogiTech2 quantum proxy adapter treats it like quantum storage and reads/writes to it—
+ * Amount changes are forwarded directly to the drawer {@link ItemContainer} (volatile int + synchronized), without moving any items.
+ * Like the cell network, it reads and writes the real data: drawers can also be changed by network routing and other sources,
+ * so it must read the current amount and apply only the difference when writing, to avoid overwriting those changes.
+ * It only stores the drawer location and calls {@link NetworksDrawer#getStorageData} each time—
+ * it reads 0 while the chunk is unloaded and works again once it loads. Replaying after a restart does not depend on chunk load order.
+ * The reflection resolver is pinned to QuantumCache by {@link CellVirtualCache#preWarmResolvers()}.
  */
 public class DrawerVirtualCache extends QuantumCache {
 

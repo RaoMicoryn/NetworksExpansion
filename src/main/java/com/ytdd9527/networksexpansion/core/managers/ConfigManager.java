@@ -176,8 +176,9 @@ public class ConfigManager {
     }
 
     /**
-     * 拼音搜索开关。关闭后物品搜索仅匹配原文名，跳过 pinyin 库的拼音/首字母转换。
-     * 所有 {@code PinyinHelper.toPinyin} 调用点都必须先经此检测。
+     * Toggle for pinyin search. When disabled, item searches only match the original item name and skip
+     * pinyin/initial-letter conversion from the pinyin library.
+     * All {@code PinyinHelper.toPinyin} calls must check this setting first.
      */
     public boolean isPinyinSearchEnabled() {
         return getBoolean("enable-pinyin-search", true);

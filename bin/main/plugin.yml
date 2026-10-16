@@ -1,0 +1,75 @@
+name: Networks
+authors:
+  - Sefiraat
+  - balugaq
+  - ytdd9527
+description: No idea yet
+main: io.github.sefiraat.networks.Networks
+website: https://github.com/ytdd9527/NetworksExpansion
+version: ${version}
+api-version: 1.21
+depend:
+  - Slimefun
+softdepend:
+  - GuizhanLibPlugin
+  - InfinityExpansion
+  - FluffyMachines
+  - Netheopoiesis
+  - SlimeHUD
+  - WildChests
+  - RoseStacker
+  - WildStacker
+  - mcMMO
+  - GuguSlimefunLib
+  - FinalTECH
+  - FinalTECH-Changed
+#  - JustEnoughGuide # Don't add this line, see https://github.com/balugaq/JustEnoughGuide/blob/master/src/main/java/com/balugaq/jeg/implementation/ThirdPartyWarnings.java
+commands:
+  networks:
+    aliases: networksexpansion
+    description: NetworksExpansion base command
+    usage: The NetworksExpansion version you have installed does not seem to be compatible with your server setup. Check your console for more detailed info.
+
+permissions:
+  networks.admin:
+    description: Allows you to use all NetworksExpansion commands
+    default: op
+  networks.commands.help:
+    description: Allows you to use the /networks help command
+    default: op
+  networks.commands.fillquantum:
+    description: Allows you to use the /networks fillquantum command
+    default: op
+  networks.commands.fixblueprint:
+    description: Allows you to use the /networks fixblueprint command
+    default: op
+  networks.commands.restore:
+    description: Allows you to use the /networks restore command
+    default: op
+  networks.commands.addstorageitem:
+    description: Allows you to use the /networks addstorageitem command
+    default: op
+  networks.commands.reducestorageitem:
+    description: Allows you to use the /networks reducestorageitem command
+    default: op
+  networks.commands.setquantum:
+    description: Allows you to use the /networks setquantum command
+    default: op
+  networks.commands.setcontainerid:
+    description: Allows you to use the /networks setcontainerid command
+    default: op
+  networks.commands.celltoquantum:
+    description: Allows you to use the /networks celltoquantum command
+    default: op
+  networks.commands.updateitem:
+    description: Allows you to use the /networks updateitem command
+    default: op
+  networks.commands.findcachedstorages:
+    description: Allows you to use the /networks findcachedstorages command
+    default: op
+  networks.commands.getstorageitem:
+    description: Allows you to use the /networks getstorageitem command
+    default: op
+  networks.commands.map:
+    description: Allows you to use the /networks map command
+    default: op

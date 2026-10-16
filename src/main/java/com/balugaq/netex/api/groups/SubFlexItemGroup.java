@@ -43,8 +43,10 @@ public class SubFlexItemGroup extends FlexItemGroup {
     private static final int PREVIOUS_SLOT = 3;
     private static final int NEXT_SLOT = 5;
     private static final int ICON_SLOT = 7;
-    private static final int[] BORDER = new int[]{0, 2, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
+    // Only the header row has a border; the content grid (5 rows x 9 columns) is left empty on purpose.
+    private static final int[] BORDER = new int[]{0, 2, 4, 6, 8};
     private static final int[][] MAIN_CONTENT_L = new int[][]{
+        new int[]{9, 10, 11, 12, 13, 14, 15, 16, 17},
         new int[]{18, 19, 20, 21, 22, 23, 24, 25, 26},
         new int[]{27, 28, 29, 30, 31, 32, 33, 34, 35},
         new int[]{36, 37, 38, 39, 40, 41, 42, 43, 44},
@@ -196,28 +198,36 @@ public class SubFlexItemGroup extends FlexItemGroup {
             return false;
         });
 
-        chestMenu.addItem(
-            PREVIOUS_SLOT,
-            ItemStackUtil.getCleanItem(ChestMenuUtils.getPreviousButton(
-                player, this.page, (slimefunItemList.size() - 1) / MAIN_CONTENT_L.length + 1)));
-        chestMenu.addMenuClickHandler(PREVIOUS_SLOT, (p, slot, item, action) -> {
-            GuideUtil.removeLastEntry(playerProfile.getGuideHistory());
-            SubFlexItemGroup subFlexItemGroup = this.getByPage(Math.max(this.page - 1, 1));
-            subFlexItemGroup.open(player, playerProfile, slimefunGuideMode);
-            return false;
-        });
+        if (((this.slimefunItemList.size() - 1) / MAIN_CONTENT_L.length + 1) > 1) {
+            chestMenu.addItem(
+                PREVIOUS_SLOT,
+                ItemStackUtil.getCleanItem(ChestMenuUtils.getPreviousButton(
+                    player, this.page, (slimefunItemList.size() - 1) / MAIN_CONTENT_L.length + 1)));
+            chestMenu.addMenuClickHandler(PREVIOUS_SLOT, (p, slot, item, action) -> {
+                GuideUtil.removeLastEntry(playerProfile.getGuideHistory());
+                SubFlexItemGroup subFlexItemGroup = this.getByPage(Math.max(this.page - 1, 1));
+                subFlexItemGroup.open(player, playerProfile, slimefunGuideMode);
+                return false;
+            });
 
-        chestMenu.addItem(
-            NEXT_SLOT,
-            ItemStackUtil.getCleanItem(ChestMenuUtils.getNextButton(
-                player, this.page, (slimefunItemList.size() - 1) / MAIN_CONTENT_L.length + 1)));
-        chestMenu.addMenuClickHandler(NEXT_SLOT, (p, slot, item, action) -> {
-            GuideUtil.removeLastEntry(playerProfile.getGuideHistory());
-            SubFlexItemGroup subFlexItemGroup =
-                this.getByPage(Math.min(this.page + 1, (slimefunItemList.size() - 1) / MAIN_CONTENT_L.length + 1));
-            subFlexItemGroup.open(player, playerProfile, slimefunGuideMode);
-            return false;
-        });
+            chestMenu.addItem(
+                NEXT_SLOT,
+                ItemStackUtil.getCleanItem(ChestMenuUtils.getNextButton(
+                    player, this.page, (slimefunItemList.size() - 1) / MAIN_CONTENT_L.length + 1)));
+            chestMenu.addMenuClickHandler(NEXT_SLOT, (p, slot, item, action) -> {
+                GuideUtil.removeLastEntry(playerProfile.getGuideHistory());
+                SubFlexItemGroup subFlexItemGroup =
+                    this.getByPage(Math.min(this.page + 1, (slimefunItemList.size() - 1) / MAIN_CONTENT_L.length + 1));
+                subFlexItemGroup.open(player, playerProfile, slimefunGuideMode);
+                return false;
+            });
+        } else {
+            // Only one page: arrows are useless, keep the header bar clean.
+            for (int arrowSlot : new int[]{PREVIOUS_SLOT, NEXT_SLOT}) {
+                chestMenu.addItem(arrowSlot, ItemStackUtil.getCleanItem(ChestMenuUtils.getBackground()));
+                chestMenu.addMenuClickHandler(arrowSlot, ChestMenuUtils.getEmptyClickHandler());
+            }
+        }
 
         chestMenu.addItem(ICON_SLOT, ItemStackUtil.getCleanItem(super.item));
         chestMenu.addMenuClickHandler(ICON_SLOT, ChestMenuUtils.getEmptyClickHandler());

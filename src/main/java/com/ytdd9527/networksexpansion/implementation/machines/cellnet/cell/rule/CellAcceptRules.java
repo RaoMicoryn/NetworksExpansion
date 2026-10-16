@@ -26,7 +26,7 @@ public final class CellAcceptRules {
             unit.setAmount(1);
             return unit.serializeAsBytes().length > MAX_ITEM_BYTES;
         } catch (Exception e) {
-            Debug.debug("物品 NBT 体量检测序列化失败，按超大处理拒收: " + e.getMessage());
+            Debug.debug("Failed to serialize item NBT size check; treating it as oversized and rejecting: " + e.getMessage());
             return true;
         }
     }
@@ -40,7 +40,7 @@ public final class CellAcceptRules {
             return meta.getPersistentDataContainer().has(Keys.CELL_UUID, PersistentDataType.STRING)
                 || meta.getPersistentDataContainer().has(Keys.VOID_FILTERS, PersistentDataType.BYTE_ARRAY);
         } catch (Exception e) {
-            Debug.debug("元件使用痕迹检测失败，按已使用拒收: " + e.getMessage());
+            Debug.debug("Failed to check component usage marks; treating it as already used and rejecting: " + e.getMessage());
             return true;
         }
     }

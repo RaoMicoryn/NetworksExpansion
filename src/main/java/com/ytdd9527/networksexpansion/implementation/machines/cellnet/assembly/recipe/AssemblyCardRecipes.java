@@ -53,7 +53,7 @@ public final class AssemblyCardRecipes {
                 }
             }
         } catch (Exception e) {
-            Debug.trace(e, "装配卡配方识别(CraftType)异常，回退原版识别");
+            Debug.trace(e, "Assembly card recipe detection (CraftType) failed, falling back to vanilla detection");
         }
         return null;
     }

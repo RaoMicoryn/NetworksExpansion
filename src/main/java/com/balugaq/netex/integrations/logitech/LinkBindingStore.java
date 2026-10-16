@@ -23,11 +23,11 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
- * 量子纠缠绑定记录：绑定样本持久化在目标方块自己的方块数据（键 {@link #KEY}），
- * 目标位置另存全局索引（linker-bindings.yml）；启动时 {@link #replayAll} 按索引
- * 全量重放虚拟缓存注册。启动初期 Slimefun 方块数据未就绪的条目挂起重试
- * （每 100 tick 一轮，上限 {@link #MAX_REPLAY_ROUNDS} 轮），只有数据已加载
- * 且类型不符的条目才判死清除。
+ * Quantum-link binding records: binding samples are saved in the target block's own block data (key {@link #KEY}),
+ * target locations are also saved in a global index (linker-bindings.yml). On startup, {@link #replayAll} uses the index to
+ * re-register all virtual caches. Entries whose Slimefun block data is not ready during startup are put aside and retried
+ * (once every 100 ticks, up to {@link #MAX_REPLAY_ROUNDS} rounds). An entry is only removed as invalid when its data has loaded
+ * and its type does not match.
  */
 public final class LinkBindingStore {
 
@@ -62,7 +62,7 @@ public final class LinkBindingStore {
                 injector.accept(sample);
                 injected++;
             } catch (Throwable e) {
-                Debug.debug("纠缠绑定记录损坏，跳过: " + e.getMessage());
+                Debug.debug("Broken quantum-link binding record, skipping: " + e.getMessage());
             }
         }
         return injected;
@@ -180,7 +180,7 @@ public final class LinkBindingStore {
         try {
             yaml.save(indexFile());
         } catch (IOException e) {
-            Networks.getInstance().getLogger().log(Level.WARNING, "保存量子纠缠绑定索引失败", e);
+            Networks.getInstance().getLogger().log(Level.WARNING, "Failed to save the quantum-link binding index", e);
         }
     }
 
